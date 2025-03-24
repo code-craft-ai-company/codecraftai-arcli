@@ -3,56 +3,42 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import Dict, Optional
+from typing import Dict, Optional, TYPE_CHECKING
 
+from automojo.errors.exceptions import SemanticError
 
 from automojo.arcli.model.optionfield import OptionField
 
+if TYPE_CHECKING:
+    from automojo.arcli.model.command import Command
 
 class OptionGroup:
 
-    name: str
+    name: str = ""
 
     def __init__(self):
-        self.name = self.name
+        self.name = self.name.strip()
+
+        if self.name == "":
+            this_type = type(self)
+            class_name = this_type.__name__
+            errmsg = f"Option groups must be named.  Did you set the 'name' class attribute on the class='{class_name}'"
+            raise SemanticError(errmsg)
+
         return
 
     @classmethod
     def attach(cls, help_fill: Optional[Dict[str, str]]=None):
 
-        def decorator(func):
+        def decorator(command: Command):
 
-            if not hasattr(func, "__flags_long__"):
-                func.__flags_long__ = {}
-
-            if not hasattr(func, "__flags_short__"):
-                func.__flags_short__ = {}
-
-            if not hasattr(func, "__req_options__"):
-                func.__req_options__ = []
+            if not isinstance(command, Command):
+                errmsg = "The innermost decorator for a command must be 'entry', 'group' or 'command'"
+                raise SemanticError(errmsg)
             
-            if not hasattr(func, "__opt_options__"):
-                func.__opt_options__ = []
-            
-            field: OptionField
+            command.add_option_group(cls)
 
-            for field in cls.__dict__:
-                if isinstance(cls.__dict__[field], OptionField):
-                    if field.flag_short in func.__flags_short__:
-                        raise ValueError(f"Duplicate short flag: {field.flag_short}")
-                    
-                    if field.flag_long in func.__flags_long__:
-                        raise ValueError(f"Duplicate long flag: {field.flag_long}")
-                    
-                    if help_fill is not None:
-                        field = field.instantiate(help_fill)
-
-                    if field.required:
-                        func.__req_options__.append(field)
-                    else:
-                        func.__opt_options__.append(field)
-
-            return func
+            return command
 
         return decorator
 

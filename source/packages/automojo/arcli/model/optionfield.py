@@ -17,7 +17,7 @@ class OptionField:
         A field that represents a single option in a list of options.
     """
 
-    def __init__(self, *flags: str, name: str, alias: Optional[str]=None, ptype: ParamType=ParameterTypes.STRING, default: Optional[Any]=None,
+    def __init__(self, *flags: str, alias: Optional[str]=None, ptype: ParamType=ParameterTypes.STRING, default: Optional[Any]=None,
                  required: bool=False, help: Optional[str]=None, group: Optional["OptionGroup"]=None):
         """
         """
@@ -32,10 +32,6 @@ class OptionField:
             elif flag.startswith("-"):
                 self._flag_short = flag
 
-        if self._flag_short is None and self._flag_long is None:
-            raise ValueError("At least one flag, single-dash or double-dash, must be provided.")
-
-        self._name = name
         self._alias = alias
         self._ptype = ptype
         self._default = default
@@ -80,13 +76,6 @@ class OptionField:
         return self._help
     
     @property
-    def name(self) -> str:
-        """
-            Retrieves the name associated with the option field.
-        """
-        return self._name
-    
-    @property
     def ptype(self) -> ParamType:
         """
             Retrieves the name associated with the option field.
@@ -99,13 +88,6 @@ class OptionField:
             Retrieves the required status of the option field.
         """
         return self._required
-
-    def assign_alias(self, alias: str):
-        """
-            Assigns an alias to the option field.
-        """
-        self._alias = alias
-        return
     
     def assign_alias_if_not_set(self, alias: str):
         """
@@ -115,7 +97,7 @@ class OptionField:
             self._alias = alias
         return
 
-    def instantiate(self, help_fill: Dict[str, str]) -> "OptionField":
+    def clone_and_fill(self, alias: str, help_fill: Dict[str, str]) -> "OptionField":
         """
             Generates a string template for the option field.
         """
@@ -126,6 +108,11 @@ class OptionField:
         if help is not None:
             help = help.format_map(help_fill)
 
-        inst = this_type(self._flags, self._name, self._alias, self._ptype, self._default, self._required, help, self._group)
+        clone_alias = self._alias
+        if clone_alias is None:
+            clone_alias= alias
+
+        inst = this_type(self._flags, alias=clone_alias, ptype=self._ptype, default=self._default,
+                         required=self._required, help=help, group=self._group)
         
         return inst

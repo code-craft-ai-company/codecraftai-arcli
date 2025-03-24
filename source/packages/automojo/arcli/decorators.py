@@ -4,7 +4,12 @@ from typing import Any, Optional
 
 import collections
 
+from automojo.errors.exceptions import SemanticError
+
 from automojo.arcli.model.argfield import ArgField
+from automojo.arcli.model.command import Command
+from automojo.arcli.model.entrycommand import EntryCommand
+from automojo.arcli.model.groupingcommand import GroupingCommand
 from automojo.arcli.model.optionfield import OptionField
 from automojo.arcli.model.parametertypes import ParamType, ParameterTypes  
 
@@ -34,42 +39,108 @@ def argument(name: str, alias: Optional[str]=None, ptype: ParamType=ParameterTyp
 
     return decorator
 
+def command(name: Optional[str]=None):
+    
+    def decorator(func):
+        nonlocal name
 
-def option(name: str, alias: Optional[str]=None, ptype: ParamType=ParameterTypes.STRING, default: Optional[Any]=None,
+        if name is None:
+            func_name: str = func.__name__
+            name = func_name.replace("_", "-")
+
+            cmdobj = Command(name, func)
+
+        return
+
+    return decorator
+
+def entry(name: Optional[str]=None):
+    
+    def decorator(func):
+        nonlocal name
+
+        if name is None:
+            func_name: str = func.__name__
+            name = func_name.replace("_", "-")
+
+        cmdobj = EntryCommand(name, func)
+
+        return cmdobj
+
+    return decorator
+
+def group(name: Optional[str]=None):
+    
+    def decorator(func):
+        nonlocal name
+
+        if name is None:
+            func_name: str = func.__name__
+            name = func_name.replace("_", "-")
+
+            cmdobj = GroupingCommand(name, func)
+
+        return
+
+    return decorator
+
+
+def option(*flags: str, alias: Optional[str]=None, ptype: ParamType=ParameterTypes.STRING, default: Optional[Any]=None,
            required: bool=False, help: Optional[str]=None, group: Optional[str]=None):
     """
         A decorator that creates an option field.
     """
 
-    def decorator(func):
+    def decorator(command):
         """
             The decorator function.
         """
-        field = OptionField(name, alias, ptype, default, required, help, group)
 
-        if not hasattr(func, "__flags_long__"):
-            func.__flags_long__ = {}
+        if not isinstance(command, Command):
+            errmsg = "The innermost decorator for a command must be 'entry', 'group' or 'command'"
+            raise SemanticError(errmsg)
 
-        if not hasattr(func, "__flags_short__"):
-            func.__flags_short__ = {}
-
-        if not hasattr(func, "__req_options__"):
-            func.__req_options__ = []
+        if len(flags) > 2:
+            errmsg = "Each option can have only one double dash '--' flag and one single dash '-' flag."
+            raise SemanticError(errmsg)
         
-        if not hasattr(func, "__opt_options__"):
-            func.__opt_options__ = []
-        
-        if field.flag_short in func.__flags_short__:
-            raise ValueError(f"Duplicate short flag: {field.flag_short}")
-        
-        if field.flag_long in func.__flags_long__:
-            raise ValueError(f"Duplicate long flag: {field.flag_long}")
+        flag_long = None
 
-        if field.required:
-            func.__req_options__.append(field)
+        if len(flags) == 1:
+            if not flags[0].startswith("--"):
+                errmsg = "Each option must have have a '--' flag."
+                raise SemanticError(errmsg)
+            flag_long = flags[0]
         else:
-            func.__opt_options__.append(field)
+            double_dash_count = 0
+            single_dash_count = 0
+        
+            # Verify flags
+            for flag in flags:
+                if flag.startswith("--"):
+                    double_dash_count += 1
+                    flag_long = flag
+                elif flag.startswith("-"):
+                    single_dash_count += 1
 
-        return func
+            if double_dash_count > 1:
+                errmsg = "An option is only allowed to have one double dash '--' flag."
+                raise SemanticError(errmsg)
+            
+            if single_dash_count > 1:
+                errmsg = "An option is only allowed to have one single dash '-' flag."
+                raise SemanticError(errmsg)
+
+        assign_alias = flag_long.lstrip("-").replace("-", "_")
+        if alias is not None:
+            assign_alias = alias
+
+        opt_field = OptionField(*flags, alias=assign_alias, ptype=ptype, default=default, required=required, help=help, group=group)
+
+        command.add_option(opt_field)
+
+        return command
 
     return decorator
+
+
