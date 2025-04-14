@@ -7,10 +7,12 @@ import shlex
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.arcli.model.parameter import Parameter
-from automojo.arcli.model.argfield import ArgField
-from automojo.arcli.model.optionfield import OptionField
-from automojo.arcli.model.parametertypes import ParameterTypes
+from automojo.arcli.model.parameters.parameterbase import ParameterBase
+from automojo.arcli.model.parameters.booleanparameter import BooleanParameter
+
+from automojo.arcli.model.fields.argfield import ArgField
+from automojo.arcli.model.fields.optionfield import OptionField, OptionMode
+from automojo.arcli.model.fields.trapfield import TrapField
 
 
 if TYPE_CHECKING:
@@ -46,9 +48,9 @@ class ProgressiveOptionParser:
         self._arg_components = args[1:]
         return
 
-
     def parse_parameters_for_command(self, command: "Command") -> OrderedDict[str, Union[ArgField, OptionField]]:
-
+        """
+        """
 
         parameter_table = collections.OrderedDict()
 
@@ -62,10 +64,10 @@ class ProgressiveOptionParser:
         # correspond with
         flags_lookup_table = command.flags_lookup_table
 
-        # The parameters_to_fill list provides an ordered list of parameters to fill that will need to
-        # be filled in order to provide the necessary parameters to the command callback function.
-        parameters_to_fill = [ pobj for pobj in command.parameters ]
+        # Process traps options
+        traps = command.traps
 
+        self._process_traps(traps)
 
         # Process options until we reach something without a flag
         nxtopt_field: OptionField
@@ -73,6 +75,8 @@ class ProgressiveOptionParser:
             nxtopt_field = flags_lookup_table[nxtopt_flag]
             if nxtopt_value is not None:
                 nxtopt_field.fill_token(nxtopt_value)
+            elif isinstance(nxtopt_field, TrapField):
+                nxtopt_field.call_trap_callback()
             else:
                 print("Encountered 'None' option token.")
 
@@ -106,7 +110,7 @@ class ProgressiveOptionParser:
                     errmsg = "Command has required arguments that were not filled."
                     raise SemanticError(errmsg)
 
-        for param_obj in parameters_to_fill:
+        for param_obj in command.parameters:
             parameter_table[param_obj.alias] =  param_obj
 
         return parameter_table
@@ -168,20 +172,13 @@ class ProgressiveOptionParser:
                 raise StopIteration()
             
             self._index_cursor += 1
-    
+
     def _read_option_from_tokens(self, flags_lookup_table: Dict[str, OptionField]) -> Tuple[str, str]:
 
         nxtarg: str = self._arg_components[self._index_cursor]
 
-        flag_prefix = None
-
         comp_flag = None
         comp_val = None
-
-        if nxtarg.startswith('--'):
-            flag_prefix = '--'
-        elif nxtarg.startswith('-'):
-            flag_prefix = '-'
 
         pieces = split_option_component(nxtarg)
 
@@ -189,12 +186,12 @@ class ProgressiveOptionParser:
             comp_flag = nxtarg
 
             optfield = flags_lookup_table[comp_flag]
-            if optfield.ptype == ParameterTypes.BOOLEAN:
+            if optfield.ptype == BooleanParameter:
                 if comp_flag == optfield.flag_long:
                     comp_val = True
                 else:
                     comp_val = False
-            elif optfield.is_counter:
+            elif optfield.mode == OptionMode.Counter:
                 comp_val = 1
 
         elif len(pieces) == 3 and pieces[1] == '=':

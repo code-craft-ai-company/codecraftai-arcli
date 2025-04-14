@@ -3,15 +3,29 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from typing import Any, Dict, Optional, Type, TYPE_CHECKING
+
+
+from enum import IntEnum
 
 
 from automojo.errors.exceptions import SemanticError
-from automojo.arcli.model.parametertypes import ParamType, ParameterTypes
+from automojo.arcli.model.parameters.parameterbase import ParameterBase
+
+from automojo.arcli.model.parameters.booleanparameter import BooleanParameter
+from automojo.arcli.model.parameters.integerparameter import IntegerParameter
+from automojo.arcli.model.parameters.stringparameter import StringParameter
+from automojo.arcli.model.parameters.listofstringparameter import ListOfStringParameter
 
 
 if TYPE_CHECKING:
     from automojo.arcli.model.optiongroup import OptionGroup
+
+
+class OptionMode(IntEnum):
+    Simple = 0
+    Multiple = 1
+    Counter = 2
 
 
 class OptionField:
@@ -19,8 +33,8 @@ class OptionField:
         A field that represents a single option in a list of options.
     """
 
-    def __init__(self, *flags: str, alias: Optional[str]=None, ptype: Optional[ParamType]=None, default: Optional[Any]=None,
-                 required: bool=False, multiple: bool=False, count: bool=False, help: Optional[str]=None, group: Optional["OptionGroup"]=None):
+    def __init__(self, *flags: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=None, default: Optional[Any]=None,
+                 required: bool=False, mode: OptionMode=OptionMode.Simple, help: Optional[str]=None, group: Optional["OptionGroup"]=None):
         """
         """
 
@@ -30,14 +44,11 @@ class OptionField:
 
         self._flags = flags
         self._alias = alias
-        self._ptype = ptype
         self._default = default
         self._required = required
-        self._multiple = multiple
-        self._count = count
+        self._mode = mode
         self._help = help
         self._group = group
-
 
         self._flag_short = None
         self._flag_long = None
@@ -51,7 +62,7 @@ class OptionField:
                     self._flag_long = on_flag
                     self._flag_off = off_flag
 
-                    ptype = ParameterTypes.BOOLEAN
+                    ptype = BooleanParameter
                 else:
                     self._flag_long = flag
             elif flag.startswith("-"):
@@ -59,12 +70,20 @@ class OptionField:
 
         # If the parameter type was not set, we need to set the parameter type to 'STRING'
         if ptype is None:
-            ptype = ParameterTypes.STRING
-        elif ptype == ParameterTypes.BOOLEAN and self._flag_off is None:
+            if self._mode == OptionMode.Counter:
+                ptype = IntegerParameter
+            elif self._mode == OptionMode.Multiple:
+                ptype = ListOfStringParameter
+            else:
+                ptype = StringParameter
+
+        elif ptype == BooleanParameter and self._flag_off is None:
             self._flag_off = f"--no-{self._flag_long[2:]}"
 
+        self._ptype = ptype
+
         self._token = None
-        if self._multiple:
+        if self._mode == OptionMode.Multiple or self._mode == OptionMode.Counter:
             self._token = []
         
         return
@@ -103,15 +122,16 @@ class OptionField:
             Retrieves the help of the option field.
         """
         return self._help
-    
-    @property
-    def is_counter(self) -> bool:
-        """
-            Returns a value indicating if the flag is a counter flag.
-        """
 
     @property
-    def ptype(self) -> ParamType:
+    def mode(self) -> OptionMode:
+        """
+            Returns the mode of operation for the option.
+        """
+        return self._mode
+
+    @property
+    def ptype(self) -> Type[ParameterBase]:
         """
             Retrieves the name associated with the option field.
         """
@@ -153,12 +173,20 @@ class OptionField:
         return inst
 
 
-    def get_value(self) -> str:
-        return self._token
+    def get_parameter(self) -> ParameterBase:
+        
+        tvalue = self._token
+        if self._mode == OptionMode.Counter:
+            tvalue = len(self._token)
+
+        param = self._ptype(self._alias, tvalue)
+        
+        return param
+
 
     def fill_token(self, token: str):
 
-        if self._multiple:
+        if self._mode == OptionMode.Counter or self._mode == OptionMode.Multiple:
             self._token.append(token)
         else:
             if self._token is not None:

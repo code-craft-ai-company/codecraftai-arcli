@@ -6,11 +6,11 @@ import collections
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.arcli.model.argfield import ArgField
+from automojo.arcli.model.fields.argfield import ArgField
 from automojo.arcli.model.command import Command
 from automojo.arcli.model.entrycommand import EntryCommand
 from automojo.arcli.model.groupingcommand import GroupingCommand
-from automojo.arcli.model.optionfield import OptionField
+from automojo.arcli.model.fields.optionfield import OptionField, OptionMode
 from automojo.arcli.model.parametertypes import ParamType, ParameterTypes  
 
 
@@ -86,7 +86,7 @@ def group(name: Optional[str]=None):
 
 
 def option(*flags: str, alias: Optional[str]=None, ptype: ParamType=ParameterTypes.STRING, default: Optional[Any]=None,
-           required: bool=False, multiple: bool=False, help: Optional[str]=None, group: Optional[str]=None):
+           required: bool=False, mode: OptionMode=OptionMode.Simple, help: Optional[str]=None, group: Optional[str]=None):
     """
         A decorator that creates an option field.
     """
@@ -135,7 +135,7 @@ def option(*flags: str, alias: Optional[str]=None, ptype: ParamType=ParameterTyp
         if alias is not None:
             assign_alias = alias
 
-        opt_field = OptionField(*flags, alias=assign_alias, ptype=ptype, default=default, required=required, multiple=multiple, help=help, group=group)
+        opt_field = OptionField(*flags, alias=assign_alias, ptype=ptype, default=default, required=required, mode=mode, help=help, group=group)
 
         command.add_option(opt_field)
 

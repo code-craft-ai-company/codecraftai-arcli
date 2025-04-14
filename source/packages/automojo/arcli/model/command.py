@@ -6,10 +6,11 @@ import inspect
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.arcli.model.argfield import ArgField
+from automojo.arcli.model.fields.argfield import ArgField
 from automojo.arcli.model.clicontext import CliContext
-from automojo.arcli.model.optionfield import OptionField
+from automojo.arcli.model.fields.optionfield import OptionField
 from automojo.arcli.model.optiongroup import OptionGroup
+from automojo.arcli.model.fields.trapfield import TrapField
 
 from automojo.arcli.parsing import ProgressiveOptionParser
 
@@ -22,10 +23,11 @@ class Command:
         self._flags_short = {}
         self._flags_long = {}
 
+        self._traps = []
         self._options = collections.OrderedDict()
         self._arguments = []
 
-        self._parameters = collections.OrderedDict()
+        self._parameter_fields = collections.OrderedDict()
 
         self._option_groups = {}
 
@@ -61,7 +63,19 @@ class Command:
     
     @property
     def parameters(self) -> List[Union[ArgField, OptionField]]:
-        rtnval = [fobj for fobj in self._parameters.values()]
+        
+        rtnval = []
+        
+        fobj: Union[ArgField, OptionField]
+        for fobj in self._parameter_fields.values():
+            param = fobj.get_parameter()
+            rtnval.append(param)
+
+        return rtnval
+
+    @property
+    def traps(self) -> List[TrapField]:
+        rtnval = self._traps.copy()
         return rtnval
 
     def add_argument(self, arg: ArgField):
@@ -74,7 +88,6 @@ class Command:
         
         flag_short = option.flag_short
         flag_long = option.flag_long
-        required = option.required
 
         if flag_short is not None and flag_short in self._flags_short:
             raise ValueError(f"Duplicate short flag: {flag_short}")
@@ -92,6 +105,28 @@ class Command:
 
         self._add_parameter(option)
         
+        return
+
+    def add_trap(self, trap: TrapField, group_name: str = "*"):
+        
+        flag_short = trap.flag_short
+        flag_long = trap.flag_long
+
+        if flag_short is not None and flag_short in self._flags_short:
+            raise ValueError(f"Duplicate short flag: {flag_short}")
+        
+        self._flags_short[flag_short] = trap
+        
+        if flag_long in self._flags_long:
+            raise ValueError(f"Duplicate long flag: {flag_long}")
+        
+        self._flags_long[flag_long] = trap
+
+        self._traps.append(trap)
+
+        # Trap options are simple high priority flags that perform a task and hault execution, they are not
+        # passed on to the command callback, they will be handled during parameter parsing.
+
         return
 
     def add_option_group(self, option_group: Type[OptionGroup]):
@@ -152,16 +187,18 @@ class Command:
                 errmsg = f"The {argn} parameter for function '{fname}' could not be found."
                 raise SemanticError(errmsg)
 
+        self._callargs = callargs
+
         return
     
     def _add_parameter(self, param: Union[ArgField, OptionField]):
         
         alias = param.alias
 
-        if alias in self._parameters:
+        if alias in self._parameter_fields:
             errmsg = "Duplicate alias found for parameter."
             raise SemanticError(errmsg)
 
-        self._parameters[alias] = param
+        self._parameter_fields[alias] = param
 
         return

@@ -18,7 +18,7 @@ class GroupingCommand(Command):
 
         self._callchild = None
         return
-    
+
     @property
     def has_children(self) -> bool:
         rtnval = len(self._command_nodes) > 0
@@ -34,7 +34,7 @@ class GroupingCommand(Command):
         self._command_nodes[cmdname] = command
 
         return
-    
+
     def has_child_command(self, cmdname: str):
         
         exists = False
@@ -43,30 +43,6 @@ class GroupingCommand(Command):
 
         return exists
 
-    def prepare_callargs(self, context: CliContext, parser: ProgressiveOptionParser):
-
-        callargs = []
-
-        sigspec = inspect.signature(self._callable)
-
-        argnames = [aname for aname in sigspec.parameters.keys()]
-        if argnames[0] == 'context':
-            callargs.append(context)
-
-        parameter_table = parser.parse_parameters_for_command(self)
-
-        for argn in argnames:
-            if argn in parameter_table:
-                param = parameter_table[argn]
-                argv = param.get_value()
-                callargs.append(argv)
-            else:
-                fname = self._callable.__name__
-                errmsg = f"The {argn} parameter for function '{fname}' could not be found."
-                raise SemanticError(errmsg)
-
-        return
-    
     def call_command(self):
 
         self._callable(*self._callargs)
