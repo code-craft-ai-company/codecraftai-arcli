@@ -9,10 +9,16 @@ class ParamType:
 
     name: str
 
+class BoolType(ParamType):
+    """
+    A parameter type that represents a boolean.
+    """
+
+    name: str = "boolean"
 
 class IntType(ParamType):
     """
-    A parameter type that represents a string.
+    A parameter type that represents a integer.
     """
 
     name: str = "integer"
@@ -28,6 +34,8 @@ class StringType(ParamType):
 
 class ParameterTypes:
 
+    BOOLEAN = BoolType
     INT = IntType
     STRING = StringType
+    
 

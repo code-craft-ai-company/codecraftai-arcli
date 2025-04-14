@@ -5,6 +5,8 @@ __credits__ = []
 
 from typing import Any, Dict, Optional, TYPE_CHECKING
 
+
+from automojo.errors.exceptions import SemanticError
 from automojo.arcli.model.parametertypes import ParamType, ParameterTypes
 
 
@@ -17,27 +19,54 @@ class OptionField:
         A field that represents a single option in a list of options.
     """
 
-    def __init__(self, *flags: str, alias: Optional[str]=None, ptype: ParamType=ParameterTypes.STRING, default: Optional[Any]=None,
-                 required: bool=False, help: Optional[str]=None, group: Optional["OptionGroup"]=None):
+    def __init__(self, *flags: str, alias: Optional[str]=None, ptype: Optional[ParamType]=None, default: Optional[Any]=None,
+                 required: bool=False, multiple: bool=False, count: bool=False, help: Optional[str]=None, group: Optional["OptionGroup"]=None):
         """
         """
+
+        if alias == 'context':
+            errmsg = "The word 'context' is reserved for passing the 'CliContext' object to command nodes.  It cannot be used as a parameter alias."
+            raise SemanticError(errmsg)
 
         self._flags = flags
-
-        self._flag_short = None
-        self._flag_long = None
-        for flag in flags:
-            if flag.startswith("--"):
-                self._flag_long = flag
-            elif flag.startswith("-"):
-                self._flag_short = flag
-
         self._alias = alias
         self._ptype = ptype
         self._default = default
         self._required = required
+        self._multiple = multiple
+        self._count = count
         self._help = help
         self._group = group
+
+
+        self._flag_short = None
+        self._flag_long = None
+        self._flag_off = None
+        
+        for flag in flags:
+            if flag.startswith("--"):
+                if flag.find("/") > -1:
+                    on_flag, off_flag = flag.split("/")
+                    
+                    self._flag_long = on_flag
+                    self._flag_off = off_flag
+
+                    ptype = ParameterTypes.BOOLEAN
+                else:
+                    self._flag_long = flag
+            elif flag.startswith("-"):
+                self._flag_short = flag
+
+        # If the parameter type was not set, we need to set the parameter type to 'STRING'
+        if ptype is None:
+            ptype = ParameterTypes.STRING
+        elif ptype == ParameterTypes.BOOLEAN and self._flag_off is None:
+            self._flag_off = f"--no-{self._flag_long[2:]}"
+
+        self._token = None
+        if self._multiple:
+            self._token = []
+        
         return
     
     @property
@@ -75,6 +104,12 @@ class OptionField:
         """
         return self._help
     
+    @property
+    def is_counter(self) -> bool:
+        """
+            Returns a value indicating if the flag is a counter flag.
+        """
+
     @property
     def ptype(self) -> ParamType:
         """
@@ -116,3 +151,20 @@ class OptionField:
                          required=self._required, help=help, group=self._group)
         
         return inst
+
+
+    def get_value(self) -> str:
+        return self._token
+
+    def fill_token(self, token: str):
+
+        if self._multiple:
+            self._token.append(token)
+        else:
+            if self._token is not None:
+                errmsg = f"Duplicate token for flag {self._flag_long}."
+                raise SemanticError(errmsg)
+
+            self._token = token
+
+        return

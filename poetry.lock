@@ -13,7 +13,7 @@ develop = false
 type = "git"
 url = "git@github.com:automationmojo/automojo-errors.git"
 reference = "main"
-resolved_reference = "83d91de7cf9e3788912cd1844a3c14f52266c829"
+resolved_reference = "cc7775dce08c87450c47a7f74d3b7de3be41b7d4"
 
 [metadata]
 lock-version = "2.0"
