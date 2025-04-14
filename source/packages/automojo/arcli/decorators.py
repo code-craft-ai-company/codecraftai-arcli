@@ -1,20 +1,22 @@
 
 
-from typing import Any, Optional
+from typing import Any, Callable, Optional, Type
 
 import collections
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.arcli.model.fields.argfield import ArgField
+
 from automojo.arcli.model.command import Command
 from automojo.arcli.model.entrycommand import EntryCommand
 from automojo.arcli.model.groupingcommand import GroupingCommand
+from automojo.arcli.model.fields.argfield import ArgField
 from automojo.arcli.model.fields.optionfield import OptionField, OptionMode
-from automojo.arcli.model.parametertypes import ParamType, ParameterTypes  
+from automojo.arcli.model.fields.trapfield import TrapField
+from automojo.arcli.model.parameters.parameterbase import ParameterBase  
 
 
-def argument(name: str, alias: Optional[str]=None, ptype: ParamType=ParameterTypes.STRING, help: Optional[str]=None):
+def argument(name: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=None, help: Optional[str]=None):
     """
         A decorator that creates an argument field.
     """
@@ -85,7 +87,7 @@ def group(name: Optional[str]=None):
     return decorator
 
 
-def option(*flags: str, alias: Optional[str]=None, ptype: ParamType=ParameterTypes.STRING, default: Optional[Any]=None,
+def option(*flags: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=None, default: Optional[Any]=None,
            required: bool=False, mode: OptionMode=OptionMode.Simple, help: Optional[str]=None, group: Optional[str]=None):
     """
         A decorator that creates an option field.
@@ -136,6 +138,56 @@ def option(*flags: str, alias: Optional[str]=None, ptype: ParamType=ParameterTyp
             assign_alias = alias
 
         opt_field = OptionField(*flags, alias=assign_alias, ptype=ptype, default=default, required=required, mode=mode, help=help, group=group)
+
+        command.add_option(opt_field)
+
+        return command
+
+    return decorator
+
+
+def trap(*flags: str, trap_callback: Callable, help: Optional[str]=None, group: Optional[str]=None):
+    """
+        A decorator that creates an trap optional field.
+    """
+
+    def decorator(command):
+        """
+            The decorator function.
+        """
+
+        if not isinstance(command, Command):
+            errmsg = "The innermost decorator for a command must be 'entry', 'group' or 'command'"
+            raise SemanticError(errmsg)
+
+        if len(flags) > 2:
+            errmsg = "Each option can have only one double dash '--' flag and one single dash '-' flag."
+            raise SemanticError(errmsg)
+
+        if len(flags) == 1:
+            if not flags[0].startswith("--"):
+                errmsg = "Each option must have have a '--' flag."
+                raise SemanticError(errmsg)
+        else:
+            double_dash_count = 0
+            single_dash_count = 0
+        
+            # Verify flags
+            for flag in flags:
+                if flag.startswith("--"):
+                    double_dash_count += 1
+                elif flag.startswith("-"):
+                    single_dash_count += 1
+
+            if double_dash_count > 1:
+                errmsg = "An trap is only allowed to have one double dash '--' flag."
+                raise SemanticError(errmsg)
+            
+            if single_dash_count > 1:
+                errmsg = "An trap is only allowed to have one single dash '-' flag."
+                raise SemanticError(errmsg)
+
+        opt_field = TrapField(*flags, trap_callback=trap_callback, help=help, group=group)
 
         command.add_option(opt_field)
 

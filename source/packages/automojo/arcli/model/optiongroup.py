@@ -7,7 +7,7 @@ from typing import Dict, Optional, TYPE_CHECKING
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.arcli.model.optionfield import OptionField
+from automojo.arcli.model.fields.optionfield import OptionField
 
 if TYPE_CHECKING:
     from automojo.arcli.model.command import Command

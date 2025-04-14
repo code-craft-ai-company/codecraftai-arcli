@@ -55,19 +55,10 @@ class ProgressiveOptionParser:
         parameter_table = collections.OrderedDict()
 
         cname = command.name
-
-        # This table is used to match up an alias with the parameter that will be processed to
-        # fill the alias value
-        alias_to_field_table = command.parameters
-        
+ 
         # This table is used when matching command line flags with the options they
         # correspond with
         flags_lookup_table = command.flags_lookup_table
-
-        # Process traps options
-        traps = command.traps
-
-        self._process_traps(traps)
 
         # Process options until we reach something without a flag
         nxtopt_field: OptionField
