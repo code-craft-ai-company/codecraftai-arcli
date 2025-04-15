@@ -64,10 +64,12 @@ class ProgressiveOptionParser:
         nxtopt_field: OptionField
         for nxtopt_flag, nxtopt_value in self._next_option(flags_lookup_table):
             nxtopt_field = flags_lookup_table[nxtopt_flag]
-            if nxtopt_value is not None:
-                nxtopt_field.fill_token(nxtopt_value)
-            elif isinstance(nxtopt_field, TrapField):
+
+            if isinstance(nxtopt_field, TrapField):
                 nxtopt_field.call_trap_callback()
+                exit(0) # We only allow one trap to be hit at any given time, then we exit
+            elif nxtopt_value is not None:
+                nxtopt_field.fill_token(nxtopt_value)
             else:
                 print("Encountered 'None' option token.")
 
@@ -177,13 +179,16 @@ class ProgressiveOptionParser:
             comp_flag = nxtarg
 
             optfield = flags_lookup_table[comp_flag]
-            if optfield.ptype == BooleanParameter:
-                if comp_flag == optfield.flag_long:
-                    comp_val = True
-                else:
-                    comp_val = False
-            elif optfield.mode == OptionMode.Counter:
-                comp_val = 1
+            if isinstance(optfield, TrapField):
+                comp_val = ...
+            else:
+                if optfield.ptype == BooleanParameter:
+                    if comp_flag == optfield.flag_long:
+                        comp_val = True
+                    else:
+                        comp_val = False
+                elif optfield.mode == OptionMode.Counter:
+                    comp_val = 1
 
         elif len(pieces) == 3 and pieces[1] == '=':
             comp_flag = pieces[0]

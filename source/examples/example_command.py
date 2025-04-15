@@ -16,6 +16,7 @@ def example_command_entry(some_a: str, some_b: str):
 
 
 if __name__ == "__main__":
+
     sys.argv.append('--some-a="A"')
     sys.argv.append('--some-b="B"')
     example_command_entry()

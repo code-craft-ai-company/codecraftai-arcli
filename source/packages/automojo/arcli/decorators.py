@@ -187,9 +187,9 @@ def trap(*flags: str, trap_callback: Callable, help: Optional[str]=None, group: 
                 errmsg = "An trap is only allowed to have one single dash '-' flag."
                 raise SemanticError(errmsg)
 
-        opt_field = TrapField(*flags, trap_callback=trap_callback, help=help, group=group)
+        trap_field = TrapField(*flags, trap_callback=trap_callback, help=help, group=group)
 
-        command.add_option(opt_field)
+        command.add_trap(trap_field)
 
         return command
 
