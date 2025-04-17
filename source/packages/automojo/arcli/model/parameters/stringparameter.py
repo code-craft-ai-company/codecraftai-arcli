@@ -12,12 +12,13 @@ class StringParameter(ParameterBase[str]):
         return
     
     def get_value(self) -> str:
-    
+        
         cval = self._tvalue
 
-        if cval.startswith('"') and cval.endswith('"'):
-            cval = cval[1:-1]
-        elif cval.startswith("'") and cval.endswith("'"):
-            cval = cval[1:-1]
+        if cval is not None:
+            if cval.startswith('"') and cval.endswith('"'):
+                cval = cval[1:-1]
+            elif cval.startswith("'") and cval.endswith("'"):
+                cval = cval[1:-1]
 
         return cval

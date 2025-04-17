@@ -1,8 +1,8 @@
 
 import sys
 
-
 from automojo.arcli import decorators
+
 
 def display_version():
     print("1.0.0")

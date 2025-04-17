@@ -14,17 +14,20 @@ class ListOfStringParameter(ParameterBase[List[str]]):
     
     def get_value(self) -> List[str]:
     
-        cval = []
-        
-        for titem in self._tvalue:
+        cval = None
 
-            citem = titem
+        if self._tvalue is not None:
+            cval = []
+            
+            for titem in self._tvalue:
 
-            if citem.startswith('"') and citem.endswith('"'):
-                citem = citem[1:-1]
-            elif citem.startswith("'") and citem.endswith("'"):
-                citem = citem[1:-1]
+                citem = titem
 
-            cval.append(citem)
+                if citem.startswith('"') and citem.endswith('"'):
+                    citem = citem[1:-1]
+                elif citem.startswith("'") and citem.endswith("'"):
+                    citem = citem[1:-1]
+
+                cval.append(citem)
 
         return cval

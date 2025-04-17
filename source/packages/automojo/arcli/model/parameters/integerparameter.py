@@ -14,11 +14,12 @@ class IntegerParameter(ParameterBase[int]):
     
         cval = self._tvalue
 
-        if cval.startswith('"') and cval.endswith('"'):
-            cval = cval[1:-1]
-        elif cval.startswith("'") and cval.endswith("'"):
-            cval = cval[1:-1]
-        
-        cval = int(cval)
+        if cval is not None:
+            if cval.startswith('"') and cval.endswith('"'):
+                cval = cval[1:-1]
+            elif cval.startswith("'") and cval.endswith("'"):
+                cval = cval[1:-1]
+            
+            cval = int(cval)
 
         return cval

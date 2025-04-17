@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional, Type, TYPE_CHECKING
 from enum import IntEnum
 
 
-from automojo.errors.exceptions import SemanticError
+from automojo.errors.exceptions import SemanticError, MissingOptionError
 from automojo.arcli.model.parameters.parameterbase import ParameterBase
 
 from automojo.arcli.model.parameters.booleanparameter import BooleanParameter
@@ -176,8 +176,17 @@ class OptionField:
     def get_parameter(self) -> ParameterBase:
         
         tvalue = self._token
-        if self._mode == OptionMode.Counter:
-            tvalue = len(self._token)
+
+        if tvalue is not None:
+            if self._mode == OptionMode.Counter:
+                tvalue = len(self._token)
+
+        else:
+            if self._default is not None:
+                tvalue = self._default
+            elif self._required:
+                errmsg = f"The '{self._flags}' option is required but was not provided."
+                raise MissingOptionError(errmsg)
 
         param = self._ptype(self._alias, tvalue)
         
@@ -186,13 +195,15 @@ class OptionField:
 
     def fill_token(self, token: str):
 
-        if self._mode == OptionMode.Counter or self._mode == OptionMode.Multiple:
-            self._token.append(token)
-        else:
-            if self._token is not None:
-                errmsg = f"Duplicate token for flag {self._flag_long}."
-                raise SemanticError(errmsg)
+        if token is not None:
 
-            self._token = token
+            if self._mode == OptionMode.Counter or self._mode == OptionMode.Multiple:
+                self._token.append(token)
+            else:
+                if self._token is not None:
+                    errmsg = f"Duplicate token for flag {self._flag_long}."
+                    raise SemanticError(errmsg)
+
+                self._token = token
 
         return
