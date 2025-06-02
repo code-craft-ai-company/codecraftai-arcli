@@ -105,7 +105,7 @@ class OptionField:
     @property
     def flag_long(self) -> Optional[str]:
         """
-            Retrieves the flag_short of the option field.
+            Retrieves the **flag_long** of the option field.
         """
         return self._flag_long
 
@@ -133,7 +133,7 @@ class OptionField:
     @property
     def ptype(self) -> Type[ParameterBase]:
         """
-            Retrieves the name associated with the option field.
+            Retrieves the parameter type associated with the option field.
         """
         return self._ptype
 
