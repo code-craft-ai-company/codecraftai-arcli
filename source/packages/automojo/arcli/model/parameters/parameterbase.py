@@ -24,8 +24,8 @@ class ParameterBase(Generic[PT]):
     
     def get_value(self) -> PT:
         """
-            An abstract method that must be overridden by derived 'Parameter' types.  This method is called in order to covert
+            An abstract method that must be overridden by derived 'Parameter' types.  This method is called in order to convert
             tokens from the command-line into a value of a given type.
         """
-        errmsg = "The 'get_value' method must be overridden by drived parameter types."
+        errmsg = "The 'get_value' method must be overridden by derived parameter types."
         raise AbstractMethodError(errmsg)
