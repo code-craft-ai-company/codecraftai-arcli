@@ -26,3 +26,4 @@ automojo-errors = { git = "git@github.com:automationmojo/automojo-errors.git", b
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
