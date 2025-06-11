@@ -17,11 +17,7 @@ packages = [{include="automojo", from="source/packages"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
-automojo-errors = { git = "git@github.com:automationmojo/automojo-errors.git", branch = "main" }
-
-[tool.poetry.group.dev.dependencies]
-
-[tool.poetry.group.dbio.dependencies]
+automojo-errors = { git = "git@github.com:automationmojo/automojo-errors.git", rev = "main" }
 
 [build-system]
 requires = ["poetry-core"]

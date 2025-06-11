@@ -13,9 +13,9 @@ develop = false
 type = "git"
 url = "git@github.com:automationmojo/automojo-errors.git"
 reference = "main"
-resolved_reference = "279ac701867318b1a1873cdccc57f17db04e6d7d"
+resolved_reference = "0f4778d19bea6cf0a9d45c15c13259570e61efb6"
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "3b497fd04d121c34ce60584937fca83499a85aadeeaac69278042dbeb0de9299"
+content-hash = "ca03177451afa231f2b3fc083164d07c85e09ded8c7f797c7960a08cbec63d3e"
