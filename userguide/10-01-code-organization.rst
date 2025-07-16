@@ -115,7 +115,7 @@ and the code would be imported like:
 
         from automojo.hello.restapi.v1.HelloMessage import HelloMessage
 
-        from automojo.hello.website.blueprints.home import HomeBlueprint
+        from automojo.hello.webinterface.blueprints.home import HomeBlueprint
 
 
 'source/site/<namespace>/restapis' Folder
@@ -123,21 +123,21 @@ and the code would be imported like:
 The *restapis* folder contains the implementation of REST API endpoints for the web application or microservice. These
 endpoints define the server-side logic for handling HTTP requests and responses.
 
-'source/site/<namespace>/website' Folder
+'source/site/<namespace>/webinterface' Folder
 +++++++++++++++++++++++++++++++++++++++++++
-The *website* folder contains the server-side code for the web application's graphical interface. This includes
-templates, views, and other components that define the structure and behavior of the website.
+The *webinterface* folder contains the server-side code for the web application's graphical interface. This includes
+templates, views, and other components that define the structure and behavior of the webinterface.
 
-'source/site/<namespace>/website/blueprints' Folder
+'source/site/<namespace>/webinterface/blueprints' Folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The *blueprints* folder organizes the Flask application into modular components. Each blueprint represents a distinct
 feature or section of the web application, making the codebase easier to maintain and scale.
 
-'source/site/<namespace>/website/blueprints/<blueprint-name>' Folder
+'source/site/<namespace>/webinterface/blueprints/<blueprint-name>' Folder
 ########################################################################
 The *<blueprint-name>* folder contains the implementation details for a specific blueprint. This includes route definitions, views, and any associated templates or static files for that feature.
 
-'source/site/<namespace>/website/static' Folder
+'source/site/<namespace>/webinterface/static' Folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The *static* folder contains static assets for the web application, such as CSS, JavaScript, images, and other files
 that do not change dynamically.
