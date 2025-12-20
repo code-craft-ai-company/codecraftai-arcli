@@ -21,9 +21,17 @@ class StringParameter(ParameterBase[str]):
         cval = self._tvalue
 
         if cval is not None:
-            if cval.startswith('"') and cval.endswith('"'):
-                cval = cval[1:-1]
-            elif cval.startswith("'") and cval.endswith("'"):
-                cval = cval[1:-1]
+            # Handle string values
+            if isinstance(cval, str):
+                if cval.startswith('"') and cval.endswith('"'):
+                    cval = cval[1:-1]
+                elif cval.startswith("'") and cval.endswith("'"):
+                    cval = cval[1:-1]
+            else:
+                # Convert non-string values to string
+                cval = str(cval)
+        else:
+            # Return empty string instead of None for consistency with type annotation
+            cval = ""
 
         return cval

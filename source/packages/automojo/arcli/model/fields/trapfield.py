@@ -5,10 +5,7 @@ __credits__ = []
 
 from typing import Any, Callable, Dict, Optional, TYPE_CHECKING
 
-
 from automojo.errors.exceptions import SemanticError
-from automojo.arcli.model.parametertypes import ParamType, ParameterTypes
-
 
 if TYPE_CHECKING:
     from automojo.arcli.model.optiongroup import OptionGroup

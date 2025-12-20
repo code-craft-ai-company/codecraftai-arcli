@@ -64,7 +64,10 @@ class OptionGroup:
                 errmsg = "The innermost decorator for a command must be 'entry', 'group' or 'command'"
                 raise SemanticError(errmsg)
             
-            command.add_option_group(cls)
+            if help_fill is None:
+                help_fill = {}
+                
+            command.add_option_group(cls, help_fill)
 
             return command
 

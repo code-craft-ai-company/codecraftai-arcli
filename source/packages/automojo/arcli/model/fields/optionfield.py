@@ -230,7 +230,7 @@ class OptionField:
             clone_alias= alias
 
         inst = this_type(self._flags, alias=clone_alias, ptype=self._ptype, default=self._default,
-                         required=self._required, help=help, group=self._group)
+                         required=self._required, mode=self._mode, help=help, group=self._group)
         
         return inst
 
@@ -259,7 +259,10 @@ class OptionField:
                 tvalue = self._default
             elif self._required:
                 errmsg = f"The '{self._flags}' option is required but was not provided."
-                raise MissingOptionError(errmsg)
+                option_name = self._flag_long or self._flag_short or str(self._flags)
+                option_type = self._ptype.__name__ if self._ptype else "unknown"
+                hint = f"Please provide the {option_name} option."
+                raise MissingOptionError(errmsg, option_name, option_type, hint)
 
         param = self._ptype(self._alias, tvalue)
         

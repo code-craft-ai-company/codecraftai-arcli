@@ -20,7 +20,7 @@ from automojo.arcli.model.fields.trapfield import TrapField
 from automojo.arcli.model.parameters.parameterbase import ParameterBase  
 
 
-def argument(name: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=None, help: Optional[str]=None):
+def argument(name: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=None, required: bool=True, default: Any=None, help: Optional[str]=None):
     """
         A decorator that creates an argument field.
     """
@@ -30,7 +30,7 @@ def argument(name: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=No
             The decorator function.
         """
 
-        field = ArgField(name, alias, ptype, help)
+        field = ArgField(name, alias, ptype, required, default, help)
         
         if not hasattr(func, "__arguments__"):
             func.__arguments__ = collections.OrderedDict()
@@ -54,9 +54,8 @@ def command(name: Optional[str]=None):
             func_name: str = func.__name__
             name = func_name.replace("_", "-")
 
-            cmdobj = Command(name, func)
-
-        return
+        cmdobj = Command(name, func)
+        return cmdobj
 
     return decorator
 
@@ -84,9 +83,8 @@ def group(name: Optional[str]=None):
             func_name: str = func.__name__
             name = func_name.replace("_", "-")
 
-            cmdobj = GroupingCommand(name, func)
-
-        return
+        cmdobj = GroupingCommand(name, func)
+        return cmdobj
 
     return decorator
 

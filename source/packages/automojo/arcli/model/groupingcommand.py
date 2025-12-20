@@ -109,3 +109,20 @@ class GroupingCommand(Command):
             child_command.call_command()
 
         return
+
+    def prepare_callargs(self, context: CliContext, parser: ProgressiveOptionParser):
+        # First prepare this command's arguments
+        super().prepare_callargs(context, parser)
+        
+        # Check if there's a child command to process
+        if self.has_children and parser._index_cursor < len(parser._arg_components):
+            next_component = parser._arg_components[parser._index_cursor]
+            if self.has_child_command(next_component):
+                self._callchild = next_component
+                parser._index_cursor += 1  # Move past the child command name
+                
+                # Prepare the child command's arguments
+                child_command = self._command_nodes[self._callchild]
+                child_command.prepare_callargs(context, parser)
+        
+        return

@@ -21,19 +21,31 @@ class BooleanParameter(ParameterBase[bool]):
         cval = self._tvalue
 
         if cval is not None:
-            if cval.startswith('"') and cval.endswith('"'):
-                cval = cval[1:-1]
-            elif cval.startswith("'") and cval.endswith("'"):
-                cval = cval[1:-1]
+            # If it's already a boolean, return it directly
+            if isinstance(cval, bool):
+                return cval
+            
+            # Handle string values
+            if isinstance(cval, str):
+                if cval.startswith('"') and cval.endswith('"'):
+                    cval = cval[1:-1]
+                elif cval.startswith("'") and cval.endswith("'"):
+                    cval = cval[1:-1]
 
-            cval = cval.lower()
+                cval = cval.lower()
 
-            if cval in ["yes", "true"]:
-                cval = True
-            elif cval in ["no", "false"]:
-                cval = False
+                if cval in ["yes", "true", "1"]:
+                    cval = True
+                elif cval in ["no", "false", "0"]:
+                    cval = False
+                else:
+                    errmsg = f"Error converting command token to boolean value.  token={self._tvalue}"
+                    raise ValueError(errmsg)
             else:
-                errmsg = f"Error converting command token to boolean value.  token={self._tvalue}"
+                errmsg = f"Invalid type for boolean parameter: {type(cval)}"
                 raise ValueError(errmsg)
+        else:
+            # Default to False when no value is provided
+            cval = False
 
         return cval

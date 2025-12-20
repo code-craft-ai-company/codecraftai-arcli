@@ -70,26 +70,28 @@ class EntryCommand(GroupingCommand):
         """
         return self._prog_name
 
-    def _command_entry(self, prog_name: str, args: Sequence[str]):
-        """
-            Internal method to handle command entry and execution.
+    def _command_entry(self, prog_name: str, args: Sequence[str]) -> int:
+         """
+            Add an option group to this command.
             
-            This method creates a parser, prepares call arguments, and executes the command.
-            It serves as the core execution logic for processing command-line arguments.
+            This method processes all OptionField objects in the option group class
+            and registers them with this command.
             
-            :param prog_name: The program name
-            :param args: The command-line arguments to process
+            :param option_group: The option group class containing OptionField objects
         """
+        try:
+            # Create a full argv list with program name + args for the parser
+            full_argv = [prog_name] + list(args)
+            parser = ProgressiveOptionParser(full_argv)
 
-        parser = ProgressiveOptionParser(sys.argv)
+            self.prepare_callargs(self._context, parser)
+            self.call_command()
+            
+            return 0  # Success
+        except Exception:
+            return 1  # Error
 
-        self.prepare_callargs(self._context, parser)
-
-        self.call_command()
-
-        return
-
-    def __call__(self, *,  prog_name: Optional[str] = None, args: Optional[Sequence[str]] = None):
+    def __call__(self, *,  prog_name: Optional[str] = None, args: Optional[Sequence[str]] = None) -> int:
         """
             Execute the entry command with the provided or default arguments.
             
@@ -109,6 +111,4 @@ class EntryCommand(GroupingCommand):
         if args is None:
             args = sys.argv[1:]
             
-        rtnval = self._command_entry(prog_name, args)
-
-        return rtnval
+        return self._command_entry(prog_name, args)

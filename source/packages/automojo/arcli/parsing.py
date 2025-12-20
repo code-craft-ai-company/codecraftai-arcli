@@ -153,18 +153,24 @@ class ProgressiveOptionParser:
     def _next_option(self, flags_lookup_table: Dict[str, OptionField]) -> Generator[OptionField, None, None]:
         """
             Iterate through the options parameters until we encounter a commandline component
-            that does not start with '-' or '--'.
+            that does not start with '-' or '--', or until we encounter the '--' separator.
         """
 
         while self._index_cursor < len(self._arg_components):
 
             nxtarg: str = self._arg_components[self._index_cursor]
+            
+            # Check for end-of-options separator
+            if nxtarg == "--":
+                self._index_cursor += 1  # Skip the -- separator
+                raise StopIteration()
+                
             if not nxtarg.startswith("-"):
                 raise StopIteration()
 
             nxtopt_flag, nxtopt_value = self._read_option_from_tokens(flags_lookup_table)
 
-            if nxtopt_flag is not None and nxtopt_value is not None:
+            if nxtopt_flag is not None:
                 yield nxtopt_flag, nxtopt_value
             else:
                 raise StopIteration()
@@ -183,17 +189,35 @@ class ProgressiveOptionParser:
         if len(pieces) == 1:
             comp_flag = nxtarg
 
+            if comp_flag not in flags_lookup_table:
+                errmsg = f"Unknown option flag: '{comp_flag}'"
+                raise SemanticError(errmsg)
+            
             optfield = flags_lookup_table[comp_flag]
             if isinstance(optfield, TrapField):
                 comp_val = ...
             else:
                 if optfield.ptype == BooleanParameter:
-                    if comp_flag == optfield.flag_long:
-                        comp_val = True
-                    else:
+                    if comp_flag == optfield.flag_off:
                         comp_val = False
+                    else:
+                        # Both short and long flags should set to True
+                        comp_val = True
                 elif optfield.mode == OptionMode.Counter:
                     comp_val = 1
+                else:
+                    # For other option types, we need to consume the next argument
+                    if self._index_cursor + 1 < len(self._arg_components):
+                        next_arg = self._arg_components[self._index_cursor + 1]
+                        if not next_arg.startswith('-'):
+                            comp_val = next_arg
+                            self._index_cursor += 1  # Consume the next argument
+                        else:
+                            errmsg = f"Option '{comp_flag}' requires a value"
+                            raise SemanticError(errmsg)
+                    else:
+                        errmsg = f"Option '{comp_flag}' requires a value but none provided"
+                        raise SemanticError(errmsg)
 
         elif len(pieces) == 3 and pieces[1] == '=':
             comp_flag = pieces[0]

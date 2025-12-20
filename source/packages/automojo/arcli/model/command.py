@@ -53,6 +53,12 @@ class Command:
         self._option_groups = {}
 
         self._callargs = []
+        
+        # Process arguments from decorator
+        if hasattr(callable, "__arguments__"):
+            for arg_name, arg_field in callable.__arguments__.items():
+                self.add_argument(arg_field)
+        
         return
 
     @property
@@ -65,7 +71,7 @@ class Command:
         return self._arguments
 
     @property
-    def callable(self) -> str:
+    def callable(self) -> Callable:
         """
             Get the callable function associated with this command.
             
@@ -169,7 +175,8 @@ class Command:
         if flag_short is not None and flag_short in self._flags_short:
             raise ValueError(f"Duplicate short flag: {flag_short}")
         
-        self._flags_short[flag_short] = option
+        if flag_short is not None:
+            self._flags_short[flag_short] = option
         
         if flag_long in self._flags_long:
             raise ValueError(f"Duplicate long flag: {flag_long}")
@@ -203,7 +210,8 @@ class Command:
         if flag_short is not None and flag_short in self._flags_short:
             raise ValueError(f"Duplicate short flag: {flag_short}")
         
-        self._flags_short[flag_short] = trap
+        if flag_short is not None:
+            self._flags_short[flag_short] = trap
         
         if flag_long in self._flags_long:
             raise ValueError(f"Duplicate long flag: {flag_long}")
@@ -217,7 +225,7 @@ class Command:
 
         return
 
-    def add_option_group(self, option_group: Type[OptionGroup]):
+    def add_option_group(self, option_group: Type[OptionGroup], help_fill: Optional[Dict[str, str]] = None):
         """
             Add an option group to this command.
             
@@ -226,17 +234,22 @@ class Command:
             
             :param option_group: The option group class containing OptionField objects
         """
-
-        group_name = OptionGroup.name
+        # Create an instance of the option group
+        group_instance = option_group()
+        group_name = group_instance.name
+        
+        if help_fill is None:
+            help_fill = {}
         
         field: OptionField
-
-        for field_name, field_obj in option_group.__dict__.items():
+        for field_name, field_obj in group_instance.__class__.__dict__.items():
             if isinstance(field_obj, OptionField):
-                field_obj.assign_alias_if_not_set(field_name)
-                self.add_option(field_obj, group_name=group_name)
-    
-        self._option_groups[group_name] = option_group
+                # Clone the field to avoid shared state between commands
+                cloned_field = field_obj.clone_and_fill(field_name, help_fill)
+                cloned_field.assign_alias_if_not_set(field_name)
+                self.add_option(cloned_field, group_name=group_name)
+
+        self._option_groups[group_name] = group_instance
 
         return
     
@@ -276,7 +289,7 @@ class Command:
         if alias in self._options:
             field_obj = self._options[alias]
         
-        return
+        return field_obj
 
     def prepare_callargs(self, context: CliContext, parser: ProgressiveOptionParser):
         """
@@ -296,12 +309,20 @@ class Command:
         sigspec = inspect.signature(self._callable)
 
         argnames = [aname for aname in sigspec.parameters.keys()]
-        if argnames[0] == 'context':
+        
+        # Track if we've handled context parameter
+        context_handled = False
+        if len(argnames) > 0 and argnames[0] == 'context':
             callargs.append(context)
+            context_handled = True
 
         parameter_table = parser.parse_parameters_for_command(self)
 
         for argn in argnames:
+            # Skip context if we already handled it
+            if argn == 'context' and context_handled:
+                continue
+                
             if argn in parameter_table:
                 param = parameter_table[argn]
                 argv = param.get_value()

@@ -18,20 +18,30 @@ class ListOfStringParameter(ParameterBase[List[str]]):
     
     def get_value(self) -> List[str]:
     
-        cval = None
+        if self._tvalue is None:
+            return []
 
-        if self._tvalue is not None:
-            cval = []
-            
-            for titem in self._tvalue:
+        cval = []
+        
+        # Handle single string value
+        if isinstance(self._tvalue, str):
+            items_to_process = [self._tvalue]
+        elif isinstance(self._tvalue, list):
+            items_to_process = self._tvalue
+        else:
+            # Convert other types to list
+            items_to_process = [str(self._tvalue)]
 
+        for titem in items_to_process:
+            if isinstance(titem, str):
                 citem = titem
-
                 if citem.startswith('"') and citem.endswith('"'):
                     citem = citem[1:-1]
                 elif citem.startswith("'") and citem.endswith("'"):
                     citem = citem[1:-1]
-
-                cval.append(citem)
+            else:
+                citem = str(titem)
+            
+            cval.append(citem)
 
         return cval
