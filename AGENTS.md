@@ -3,6 +3,8 @@ AI Agents working in this repository should refer to themselves as an agent name
 
 # Project Overview
 
+# Quick Rules
+- Look for prompt files in '<repository>/prompts'
 
 # Testing Conventions
 The 'automojo-arcli' package repository utilizes the 'unittest' framework in order to test the functionality of the code.
