@@ -229,7 +229,7 @@ class OptionField:
         if clone_alias is None:
             clone_alias= alias
 
-        inst = this_type(self._flags, alias=clone_alias, ptype=self._ptype, default=self._default,
+        inst = this_type(*self._flags, alias=clone_alias, ptype=self._ptype, default=self._default,
                          required=self._required, mode=self._mode, help=help, group=self._group)
         
         return inst
