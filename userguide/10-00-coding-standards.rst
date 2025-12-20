@@ -179,6 +179,7 @@ All documentation comments for classes, functions and methods should:
 * The description of the comment should start on the second line
 * The text for the entire documentation comment is indented 4 spaces inside of the start position of the first triple quote
 * Parameter descriptions do not need to declare a type because Type hints should be given in the function signature.
+* There should be a blank line between the list of parameters and the 'returns' line
 * The 'returns' description should only contain a description, the return type should be specified by a type hint
 * The 'raises' description should be a list of exception types
 

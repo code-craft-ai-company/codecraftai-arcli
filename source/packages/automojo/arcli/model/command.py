@@ -1,4 +1,9 @@
 
+
+__author__ = "Myron Walker"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
+__credits__ = []
+
 from typing import Callable, Dict, List, Type, Union
 
 import collections
@@ -15,8 +20,24 @@ from automojo.arcli.model.fields.trapfield import TrapField
 from automojo.arcli.parsing import ProgressiveOptionParser
 
 class Command:
+    """
+        Base class for command-line interface commands.
+        
+        The Command class provides the foundation for building command-line interface commands
+        with support for arguments, options, and traps. It manages the registration and parsing
+        of command-line parameters and handles the execution of the associated callable function.
+        
+        This class serves as the base for more specialized command types and provides the core
+        functionality for parameter management, flag handling, and command execution.
+    """
 
     def __init__(self, name: str, callable: Callable):
+        """
+            Initialize a new Command instance.
+            
+            :param name: The name of the command
+            :param callable: The function to be called when this command is executed
+        """
         self._name = name
         self._callable = callable
 
@@ -36,14 +57,29 @@ class Command:
 
     @property
     def arguments(self) -> List[ArgField]:
+        """
+            Get the list of argument fields for this command.
+            
+            :returns: List of argument fields registered with this command
+        """
         return self._arguments
 
     @property
     def callable(self) -> str:
+        """
+            Get the callable function associated with this command.
+            
+            :returns: The callable function that will be executed when this command is invoked
+        """
         return self._callable
 
     @property
     def flags_lookup_table(self) -> Dict[str, OptionField]:
+        """
+            Get a combined lookup table of all short and long flags.
+            
+            :returns: Dictionary mapping flag names to their corresponding OptionField objects
+        """
         lookup_table = {}
         lookup_table.update(self._flags_short)
         lookup_table.update(self._flags_long)
@@ -51,18 +87,38 @@ class Command:
 
     @property
     def has_children(self) -> bool:
+        """
+            Check if this command has child commands.
+            
+            :returns: False for base Command class, may be overridden in subclasses
+        """
         return False
 
     @property
     def name(self) -> str:
+        """
+            Get the name of this command.
+            
+            :returns: The command name
+        """
         return self._name
 
     @property
     def options(self) -> List[OptionField]:
+        """
+            Get the list of option fields for this command.
+            
+            :returns: List of option fields registered with this command
+        """
         return self._options
     
     @property
     def parameters(self) -> List[Union[ArgField, OptionField]]:
+        """
+            Get all parameters (arguments and options) for this command.
+            
+            :returns: List of all parameter objects associated with this command
+        """
         
         rtnval = []
         
@@ -75,16 +131,37 @@ class Command:
 
     @property
     def traps(self) -> List[TrapField]:
+        """
+            Get the list of trap fields for this command.
+            
+            :returns: Copy of the list of trap fields registered with this command
+        """
         rtnval = self._traps.copy()
         return rtnval
 
     def add_argument(self, arg: ArgField):
+        """
+            Add an argument field to this command.
+            
+            :param arg: The argument field to add to this command
+        """
         self._arguments.append(arg)
 
         self._add_parameter(arg)
         return
 
     def add_option(self, option: OptionField, group_name: str = "*"):
+        """
+            Add an option field to this command.
+            
+            This method registers an option with both short and long flag lookups
+            and validates that no duplicate flags are being registered.
+            
+            :param option: The option field to add to this command
+            :param group_name: The name of the option group this option belongs to
+            
+            :raises: ValueError
+        """
         
         flag_short = option.flag_short
         flag_long = option.flag_long
@@ -108,6 +185,17 @@ class Command:
         return
 
     def add_trap(self, trap: TrapField, group_name: str = "*"):
+        """
+            Add a trap field to this command.
+            
+            Trap options are high priority flags that perform a task and halt execution.
+            They are not passed to the command callback and are handled during parameter parsing.
+            
+            :param trap: The trap field to add to this command
+            :param group_name: The name of the option group this trap belongs to
+            
+            :raises: ValueError
+        """
         
         flag_short = trap.flag_short
         flag_long = trap.flag_long
@@ -130,6 +218,14 @@ class Command:
         return
 
     def add_option_group(self, option_group: Type[OptionGroup]):
+        """
+            Add an option group to this command.
+            
+            This method processes all OptionField objects in the option group class
+            and registers them with this command.
+            
+            :param option_group: The option group class containing OptionField objects
+        """
 
         group_name = OptionGroup.name
         
@@ -145,6 +241,12 @@ class Command:
         return
     
     def call_command(self):
+        """
+            Execute the callable function associated with this command.
+            
+            This method invokes the command's callable function using the prepared
+            call arguments that were set up during parameter parsing.
+        """
 
         self._callable(*self._callargs)
 
@@ -152,11 +254,22 @@ class Command:
 
     def has_child_command(self, cmdname: str):
         """
-            Determines if this command has a child command with the given name.
+            Determine if this command has a child command with the given name.
+            
+            :param cmdname: The name of the child command to check for
+            
+            :returns: False for base Command class, may be overridden in subclasses
         """
         return False
 
     def lookup_field_by_alias(self, alias: str):
+        """
+            Look up a field object by its alias name.
+            
+            :param alias: The alias name to search for
+            
+            :returns: The OptionField object if found, None otherwise
+        """
 
         field_obj = None
 
@@ -166,6 +279,17 @@ class Command:
         return
 
     def prepare_callargs(self, context: CliContext, parser: ProgressiveOptionParser):
+        """
+            Prepare the call arguments for command execution.
+            
+            This method inspects the callable function's signature and builds the
+            appropriate argument list from the parsed parameters and context.
+            
+            :param context: The CLI context object
+            :param parser: The progressive option parser containing parsed parameters
+            
+            :raises: SemanticError
+        """
 
         callargs = []
 
@@ -192,6 +316,16 @@ class Command:
         return
     
     def _add_parameter(self, param: Union[ArgField, OptionField]):
+        """
+            Add a parameter field to the internal parameter collection.
+            
+            This is a private method used internally to register parameter fields
+            and validate that no duplicate aliases are being registered.
+            
+            :param param: The parameter field to add
+            
+            :raises: SemanticError
+        """
         
         alias = param.alias
 
