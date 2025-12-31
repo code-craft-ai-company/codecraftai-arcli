@@ -71,7 +71,7 @@ class EntryCommand(GroupingCommand):
         return self._prog_name
 
     def _command_entry(self, prog_name: str, args: Sequence[str]) -> int:
-         """
+        """
             Add an option group to this command.
             
             This method processes all OptionField objects in the option group class
