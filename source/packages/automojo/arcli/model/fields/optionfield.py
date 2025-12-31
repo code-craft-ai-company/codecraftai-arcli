@@ -11,6 +11,7 @@ from enum import IntEnum
 
 from automojo.errors.exceptions import SemanticError, MissingOptionError
 from automojo.arcli.model.parameters.parameterbase import ParameterBase
+from automojo.arcli.model.parameters.defaultparameter import DefaultParameter
 
 from automojo.arcli.model.parameters.booleanparameter import BooleanParameter
 from automojo.arcli.model.parameters.integerparameter import IntegerParameter
@@ -249,15 +250,21 @@ class OptionField:
         """
         
         tvalue = self._token
+        token_missing = tvalue is None
+
+        if not token_missing and self._mode in (OptionMode.Counter, OptionMode.Multiple):
+            token_missing = len(self._token) == 0
+
+        if token_missing and self._default is not None:
+            param = DefaultParameter(self._alias, self._default)
+            return param
 
         if tvalue is not None:
             if self._mode == OptionMode.Counter:
                 tvalue = len(self._token)
 
         else:
-            if self._default is not None:
-                tvalue = self._default
-            elif self._required:
+            if self._required:
                 errmsg = f"The '{self._flags}' option is required but was not provided."
                 option_name = self._flag_long or self._flag_short or str(self._flags)
                 option_type = self._ptype.__name__ if self._ptype else "unknown"

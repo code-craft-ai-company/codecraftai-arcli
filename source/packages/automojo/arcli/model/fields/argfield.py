@@ -10,6 +10,7 @@ from typing import Any, Optional, Type, TYPE_CHECKING
 from automojo.errors.exceptions import SemanticError
 
 from automojo.arcli.model.parameters.parameterbase import ParameterBase
+from automojo.arcli.model.parameters.defaultparameter import DefaultParameter
 from automojo.arcli.model.parameters.stringparameter import StringParameter
 
 class ArgField:
@@ -125,7 +126,10 @@ class ArgField:
             
             :returns: A parameter instance configured with this field's settings
         """
-        param = self._ptype(self._alias, self._token)
+        if self._token is None and self._default is not None:
+            param = DefaultParameter(self._alias, self._default)
+        else:
+            param = self._ptype(self._alias, self._token)
         return param
 
     def fill_token(self, token: str):

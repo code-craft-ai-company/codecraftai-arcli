@@ -16,7 +16,7 @@ class StringParameter(ParameterBase[str]):
         super().__init__(alias, tvalue)
         return
     
-    def get_value(self) -> str:
+    def get_value(self) -> Union[str, None]:
         
         cval = self._tvalue
 
@@ -32,6 +32,6 @@ class StringParameter(ParameterBase[str]):
                 cval = str(cval)
         else:
             # Return empty string instead of None for consistency with type annotation
-            cval = ""
+            cval = None
 
         return cval

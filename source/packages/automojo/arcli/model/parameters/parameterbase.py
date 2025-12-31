@@ -25,7 +25,7 @@ class ParameterBase(Generic[PT]):
     def tvalue(self) -> str:
         return self._tvalue
     
-    def get_value(self) -> PT:
+    def get_value(self) -> Union[PT, None]:
         """
             An abstract method that must be overridden by derived 'Parameter' types.  This method is called in order to convert
             tokens from the command-line into a value of a given type.
