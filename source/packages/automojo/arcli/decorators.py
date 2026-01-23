@@ -17,7 +17,8 @@ from automojo.arcli.model.groupingcommand import GroupingCommand
 from automojo.arcli.model.fields.argfield import ArgField
 from automojo.arcli.model.fields.optionfield import OptionField, OptionMode
 from automojo.arcli.model.fields.trapfield import TrapField
-from automojo.arcli.model.parameters.parameterbase import ParameterBase  
+from automojo.arcli.model.parameters.parameterbase import ParameterBase
+from automojo.arcli.interact import InteractionStrategy
 
 
 def argument(name: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=None, required: bool=True, default: Any=None, help: Optional[str]=None):
@@ -63,7 +64,7 @@ def command(name: Optional[str]=None):
 
     return decorator
 
-def entry(name: Optional[str]=None, version: Optional[str]=None):
+def entry(name: Optional[str]=None, version: Optional[str]=None, interaction_strategy: InteractionStrategy=InteractionStrategy.NEVER):
     
     def decorator(func):
         nonlocal name
@@ -72,7 +73,7 @@ def entry(name: Optional[str]=None, version: Optional[str]=None):
             func_name: str = func.__name__
             name = func_name.replace("_", "-")
 
-        cmdobj = EntryCommand(name, func, version=version)
+        cmdobj = EntryCommand(name, func, version=version, interaction_strategy=interaction_strategy)
 
         return cmdobj
 

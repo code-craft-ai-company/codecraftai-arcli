@@ -6,11 +6,18 @@ __credits__ = []
 
 import sys
 
+from automojo.arcli.interact import InteractionStrategy
+
 class CliContext:
     """
     """
 
-    def __init__(self):
+    def __init__(self, interaction_strategy: InteractionStrategy = InteractionStrategy.NEVER):
+        self._interaction_strategy = interaction_strategy
         return
+
+    @property
+    def interaction_strategy(self) -> InteractionStrategy:
+        return self._interaction_strategy
 
     

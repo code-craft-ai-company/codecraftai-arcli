@@ -18,6 +18,7 @@ from automojo.arcli.model.groupingcommand import GroupingCommand
 from automojo.arcli.model.fields.trapfield import TrapField
 
 from automojo.arcli.parsing import ProgressiveOptionParser
+from automojo.arcli.interact import InteractionStrategy
 
 
 def detect_program_name() -> str:
@@ -43,7 +44,8 @@ class EntryCommand(GroupingCommand):
         the appropriate command hierarchy based on the parsed input.
     """
 
-    def __init__(self, name: str, callable: Callable, prog_name: Optional[str] = None, version: Optional[str] = None):
+    def __init__(self, name: str, callable: Callable, prog_name: Optional[str] = None, version: Optional[str] = None,
+                 interaction_strategy: InteractionStrategy = InteractionStrategy.NEVER):
         """
             Initialize a new EntryCommand instance.
             
@@ -51,6 +53,7 @@ class EntryCommand(GroupingCommand):
             :param callable: The function to be called when this command is executed
             :param prog_name: Optional program name, auto-detected if not provided
             :param version: Optional version string
+            :param interaction_strategy: The interaction strategy to use
         """
         super().__init__(name, callable)
 
@@ -60,7 +63,7 @@ class EntryCommand(GroupingCommand):
         self._prog_name = prog_name
         self._version = version
 
-        self._context = CliContext()
+        self._context = CliContext(interaction_strategy=interaction_strategy)
 
         if self._version:
             self.add_trap(TrapField("--version", trap_callback=self._version_callback, help="Show the version and exit."))
@@ -89,17 +92,14 @@ class EntryCommand(GroupingCommand):
             
             :param option_group: The option group class containing OptionField objects
         """
-        try:
-            # Create a full argv list with program name + args for the parser
-            full_argv = [prog_name] + list(args)
-            parser = ProgressiveOptionParser(full_argv)
+        # Create a full argv list with program name + args for the parser
+        full_argv = [prog_name] + list(args)
+        parser = ProgressiveOptionParser(full_argv)
 
-            self.prepare_callargs(self._context, parser)
-            self.call_command()
-            
-            return 0  # Success
-        except Exception:
-            return 1  # Error
+        self.prepare_callargs(self._context, parser)
+        self.call_command()
+
+        return 0  # Success
 
     def __call__(self, *,  prog_name: Optional[str] = None, args: Optional[Sequence[str]] = None) -> int:
         """
