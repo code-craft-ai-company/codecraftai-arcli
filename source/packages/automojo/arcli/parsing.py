@@ -163,17 +163,17 @@ class ProgressiveOptionParser:
             # Check for end-of-options separator
             if nxtarg == "--":
                 self._index_cursor += 1  # Skip the -- separator
-                raise StopIteration()
+                return
                 
             if not nxtarg.startswith("-"):
-                raise StopIteration()
+                return
 
             nxtopt_flag, nxtopt_value = self._read_option_from_tokens(flags_lookup_table)
 
             if nxtopt_flag is not None:
                 yield nxtopt_flag, nxtopt_value
             else:
-                raise StopIteration()
+                return
             
             self._index_cursor += 1
 

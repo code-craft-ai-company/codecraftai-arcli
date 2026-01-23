@@ -32,6 +32,10 @@ def argument(name: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=No
 
         field = ArgField(name, alias, ptype, required, default, help)
         
+        if isinstance(func, Command):
+            func.add_argument(field)
+            return func
+
         if not hasattr(func, "__arguments__"):
             func.__arguments__ = collections.OrderedDict()
         
@@ -59,7 +63,7 @@ def command(name: Optional[str]=None):
 
     return decorator
 
-def entry(name: Optional[str]=None):
+def entry(name: Optional[str]=None, version: Optional[str]=None):
     
     def decorator(func):
         nonlocal name
@@ -68,7 +72,7 @@ def entry(name: Optional[str]=None):
             func_name: str = func.__name__
             name = func_name.replace("_", "-")
 
-        cmdobj = EntryCommand(name, func)
+        cmdobj = EntryCommand(name, func, version=version)
 
         return cmdobj
 
