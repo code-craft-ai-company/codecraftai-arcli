@@ -58,6 +58,8 @@ class Command:
         if hasattr(callable, "__arguments__"):
             for arg_name, arg_field in callable.__arguments__.items():
                 self.add_argument(arg_field)
+
+        self.add_trap(TrapField("-h", "--help", trap_callback=self._help_callback, help="Show this message and exit."))
         
         return
 
@@ -357,3 +359,14 @@ class Command:
         self._parameter_fields[alias] = param
 
         return
+
+    def _help_callback(self):
+        """
+            Callback function for the help trap.
+
+            Generates and displays the help message for this command, then exits.
+        """
+        from automojo.arcli.helpgenerator import HelpGenerator
+        help_text = HelpGenerator.generate_help(self)
+        print(help_text)
+        exit(0)

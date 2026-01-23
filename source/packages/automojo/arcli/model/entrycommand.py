@@ -15,6 +15,7 @@ from automojo.errors.exceptions import SemanticError
 
 from automojo.arcli.model.clicontext import CliContext
 from automojo.arcli.model.groupingcommand import GroupingCommand
+from automojo.arcli.model.fields.trapfield import TrapField
 
 from automojo.arcli.parsing import ProgressiveOptionParser
 
@@ -42,13 +43,14 @@ class EntryCommand(GroupingCommand):
         the appropriate command hierarchy based on the parsed input.
     """
 
-    def __init__(self, name: str, callable: Callable, prog_name: Optional[str] = None):
+    def __init__(self, name: str, callable: Callable, prog_name: Optional[str] = None, version: Optional[str] = None):
         """
             Initialize a new EntryCommand instance.
             
             :param name: The name of the entry command
             :param callable: The function to be called when this command is executed
             :param prog_name: Optional program name, auto-detected if not provided
+            :param version: Optional version string
         """
         super().__init__(name, callable)
 
@@ -56,10 +58,18 @@ class EntryCommand(GroupingCommand):
             prog_name = detect_program_name()
 
         self._prog_name = prog_name
+        self._version = version
 
         self._context = CliContext()
 
+        if self._version:
+            self.add_trap(TrapField("--version", trap_callback=self._version_callback, help="Show the version and exit."))
+
         return
+
+    def _version_callback(self):
+        print(self._version)
+        exit(0)
 
     @property
     def program_name(self) -> str:
