@@ -19,6 +19,8 @@ from automojo.arcli.model.fields.argfield import ArgField
 from automojo.arcli.model.fields.optionfield import OptionField, OptionMode
 from automojo.arcli.model.fields.trapfield import TrapField
 
+from automojo.arcli.interact import InteractionStrategy, prompt_for_input
+from automojo.arcli.model.clicontext import CliContext
 
 if TYPE_CHECKING:
     from automojo.arcli.model.command import Command
@@ -53,7 +55,7 @@ class ProgressiveOptionParser:
         self._arg_components = args[1:]
         return
 
-    def parse_parameters_for_command(self, command: "Command") -> OrderedDict[str, Union[ArgField, OptionField]]:
+    def parse_parameters_for_command(self, command: "Command", context: CliContext = None) -> OrderedDict[str, Union[ArgField, OptionField]]:
         """
         """
 
@@ -77,6 +79,15 @@ class ProgressiveOptionParser:
                 nxtopt_field.fill_token(nxtopt_value)
             else:
                 print("Encountered 'None' option token.")
+
+        # Handle missing required options if interaction is allowed
+        if context and context.interaction_strategy == InteractionStrategy.ALLOW:
+            for option in command.options.values():
+                if option.required and option._token is None and option.default is None:
+                     # It's required, hasn't been filled, and has no default
+                     prompt_text = option.help if option.help else f"Enter value for {option.alias}"
+                     user_input = prompt_for_input(prompt_text)
+                     option.fill_token(user_input)
 
         # Once we reach a component that is not an option match it to
         # args.
@@ -105,8 +116,13 @@ class ProgressiveOptionParser:
             # fail
             for argfield in argument_fields:
                 if argfield.required:
-                    errmsg = "Command has required arguments that were not filled."
-                    raise SemanticError(errmsg)
+                    if context and context.interaction_strategy == InteractionStrategy.ALLOW:
+                        prompt_text = argfield.help if argfield.help else f"Enter value for {argfield.name}"
+                        user_input = prompt_for_input(prompt_text)
+                        argfield.fill_token(user_input)
+                    else:
+                        errmsg = "Command has required arguments that were not filled."
+                        raise SemanticError(errmsg)
 
         for param_obj in command.parameters:
             parameter_table[param_obj.alias] =  param_obj

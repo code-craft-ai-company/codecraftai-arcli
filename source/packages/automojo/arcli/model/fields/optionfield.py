@@ -9,7 +9,8 @@ from typing import Any, Dict, Optional, Type, TYPE_CHECKING
 from enum import IntEnum
 
 
-from automojo.errors.exceptions import SemanticError, MissingOptionError
+from automojo.errors.exceptions import SemanticError
+from automojo.arcli.errors import MissingOptionError
 from automojo.arcli.model.parameters.parameterbase import ParameterBase
 from automojo.arcli.model.parameters.defaultparameter import DefaultParameter
 

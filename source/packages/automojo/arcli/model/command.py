@@ -318,7 +318,7 @@ class Command:
             callargs.append(context)
             context_handled = True
 
-        parameter_table = parser.parse_parameters_for_command(self)
+        parameter_table = parser.parse_parameters_for_command(self, context)
 
         for argn in argnames:
             # Skip context if we already handled it

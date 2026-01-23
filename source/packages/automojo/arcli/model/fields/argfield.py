@@ -50,7 +50,7 @@ class ArgField:
             ptype = StringParameter
 
         self._name = name
-        self._alias = alias
+        self._alias = alias if alias is not None else name
         self._ptype = ptype
         self._required = required
         self._default = default
