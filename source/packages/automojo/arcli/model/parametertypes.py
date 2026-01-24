@@ -3,53 +3,10 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-class ParamType:
-    """
-        Base class for parameter type definitions.
-        
-        ParamType serves as the foundation for all parameter type classes in the CLI framework.
-        It defines the basic structure that all parameter types must follow, including the
-        requirement for a name attribute that identifies the parameter type.
-        
-        This class is intended to be subclassed by specific parameter type implementations
-        such as BoolType, IntType, and StringType.
-    """
-
-    name: str
-
-class BoolType(ParamType):
-    """
-        Parameter type representing boolean values.
-        
-        BoolType is used to define command-line parameters that accept boolean values
-        such as flags or true/false options. This type is typically used for options
-        that can be either present or absent, or that accept explicit true/false values.
-    """
-
-    name: str = "boolean"
-
-class IntType(ParamType):
-    """
-        Parameter type representing integer values.
-        
-        IntType is used to define command-line parameters that accept integer numeric values.
-        This type handles the parsing and validation of integer inputs from command-line
-        arguments, ensuring that only valid integer values are accepted.
-    """
-
-    name: str = "integer"
-
-class StringType(ParamType):
-    """
-        Parameter type representing string values.
-        
-        StringType is used to define command-line parameters that accept text string values.
-        This is the most common parameter type and handles the parsing of string inputs
-        from command-line arguments, preserving the text content as provided by the user.
-    """
-
-    name: str = "string"
-
+from automojo.arcli.model.types.paramtype import ParamType
+from automojo.arcli.model.types.booltype import BoolType
+from automojo.arcli.model.types.inttype import IntType
+from automojo.arcli.model.types.stringtype import StringType
 
 
 class ParameterTypes:
@@ -69,4 +26,3 @@ class ParameterTypes:
     INT = IntType
     STRING = StringType
     
-
