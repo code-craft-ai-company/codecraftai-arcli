@@ -1,0 +1,97 @@
+
+import sys
+import unittest
+import types
+from pathlib import Path
+from typing import Optional
+
+# Ensure package paths
+repo_root = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(repo_root / 'source/packages'))
+
+# Mocking automojo.errors dependencies
+try:
+    import automojo.errors
+except ImportError:
+    err_mod = types.ModuleType('automojo.errors.exceptions')
+    class SemanticError(Exception): pass
+    class MissingOptionError(Exception): pass
+    class AbstractMethodError(Exception): pass
+    err_mod.SemanticError = SemanticError
+    err_mod.MissingOptionError = MissingOptionError
+    err_mod.AbstractMethodError = AbstractMethodError
+
+    errors_pkg = types.ModuleType('automojo.errors')
+    errors_pkg.exceptions = err_mod
+
+    import automojo
+    automojo.errors = errors_pkg
+    sys.modules['automojo.errors'] = errors_pkg
+    sys.modules['automojo.errors.exceptions'] = err_mod
+
+from automojo.arcli.model.parameters.optionalbooleanparameter import OptionalBooleanParameter
+from automojo.arcli.model.parameters.booleanparameter import BooleanParameter
+from automojo.arcli.decorators import entry, option
+from automojo.arcli import CliRunner
+
+class TestOptionalBooleanParameter(unittest.TestCase):
+
+    def test_optional_boolean_parameter_none(self):
+        param = OptionalBooleanParameter("test", None)
+        self.assertIsNone(param.get_value())
+        return
+
+    def test_optional_boolean_parameter_true(self):
+        param = OptionalBooleanParameter("test", "true")
+        self.assertTrue(param.get_value())
+        return
+
+    def test_optional_boolean_parameter_false(self):
+        param = OptionalBooleanParameter("test", "false")
+        self.assertFalse(param.get_value())
+        return
+
+    def test_boolean_parameter_regression(self):
+        # Verify BooleanParameter still returns False for None
+        param = BooleanParameter("test", None)
+        self.assertFalse(param.get_value())
+        return
+
+    def test_cli_usage_default(self):
+        @option("--opt-bool", ptype=OptionalBooleanParameter, default=None)
+        @entry()
+        def my_command(opt_bool: Optional[bool]):
+            print(f"bool: {opt_bool}")
+
+        runner = CliRunner()
+        result = runner.invoke(my_command, args=[])
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(result.stdout.strip(), "bool: None")
+        return
+
+    def test_cli_usage_true(self):
+        @option("--opt-bool", ptype=OptionalBooleanParameter, default=None)
+        @entry()
+        def my_command(opt_bool: Optional[bool]):
+            print(f"bool: {opt_bool}")
+
+        runner = CliRunner()
+        result = runner.invoke(my_command, args=["--opt-bool=true"])
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(result.stdout.strip(), "bool: True")
+        return
+
+    def test_cli_usage_false(self):
+        @option("--opt-bool", ptype=OptionalBooleanParameter, default=None)
+        @entry()
+        def my_command(opt_bool: Optional[bool]):
+            print(f"bool: {opt_bool}")
+
+        runner = CliRunner()
+        result = runner.invoke(my_command, args=["--opt-bool=false"])
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(result.stdout.strip(), "bool: False")
+        return
+
+if __name__ == '__main__':
+    unittest.main()
