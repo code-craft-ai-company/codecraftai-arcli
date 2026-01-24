@@ -10,6 +10,7 @@ from automojo.arcli.model.parameters.integerparameter import IntegerParameter
 from automojo.arcli.model.parameters.listofintegerparameter import ListOfIntegerParameter
 from automojo.arcli.model.parameters.listofstringparameter import ListOfStringParameter
 from automojo.arcli.model.parameters.stringparameter import StringParameter
+from automojo.arcli.model.parameters.optionalbooleanparameter import OptionalBooleanParameter
 from automojo.arcli.model.parameters.optionalintegerparameter import OptionalIntegerParameter
 from automojo.arcli.model.parameters.optionalstringparameter import OptionalStringParameter
 
