@@ -3,6 +3,14 @@ import unittest
 from unittest.mock import patch, MagicMock
 import sys
 from io import StringIO
+from pathlib import Path
+
+# Ensure package paths
+repo_root = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(repo_root / 'source/packages'))
+sys.path.insert(0, str(repo_root))
+
+from source.tests import setup_mocks
 
 from automojo.arcli.interact import InteractionStrategy, prompt_for_input, confirm, Spinner
 from automojo.arcli.model.clicontext import CliContext
