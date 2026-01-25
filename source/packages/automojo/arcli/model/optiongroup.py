@@ -58,15 +58,13 @@ class OptionGroup:
             :returns: Decorator function that attaches the option group to a command
         """
 
-        def decorator(command: Command):
+        def decorator(command: "Command"):
+            from automojo.arcli.model.command import Command
 
             if not isinstance(command, Command):
                 errmsg = "The innermost decorator for a command must be 'entry', 'group' or 'command'"
                 raise SemanticError(errmsg)
             
-            if help_fill is None:
-                help_fill = {}
-                
             command.add_option_group(cls, help_fill)
 
             return command
