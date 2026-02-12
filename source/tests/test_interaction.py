@@ -19,6 +19,7 @@ from automojo.arcli.model.command import Command
 from automojo.arcli.decorators import entry, option, argument
 from automojo.arcli.parsing import ProgressiveOptionParser
 from automojo.arcli.errors import MissingOptionError
+from automojo.arcli.model.fields.optionfield import OptionMode
 
 class TestInteractionUtilities(unittest.TestCase):
 
@@ -127,6 +128,46 @@ class TestInteractionIntegration(unittest.TestCase):
 
         mock_prompt.assert_called()
         self.assertIn("Got interactive_arg", captured_output.getvalue())
+
+    @patch('automojo.arcli.parsing.prompt_for_input', return_value='interactive_multi')
+    def test_missing_required_multiple_option_prompts_when_allowed(self, mock_prompt):
+        @option('--req', required=True, mode=OptionMode.Multiple)
+        @entry(interaction_strategy=InteractionStrategy.ALLOW)
+        def my_cmd(req):
+            print(f"Got {req}")
+
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        try:
+            my_cmd(args=[])
+        except SystemExit:
+            pass
+        finally:
+            sys.stdout = sys.__stdout__
+
+        mock_prompt.assert_called()
+        self.assertIn("Got ['interactive_multi']", captured_output.getvalue())
+
+    @patch('automojo.arcli.parsing.prompt_for_input', return_value='interactive_counter')
+    def test_missing_required_counter_option_prompts_when_allowed(self, mock_prompt):
+        @option('--req', required=True, mode=OptionMode.Counter)
+        @entry(interaction_strategy=InteractionStrategy.ALLOW)
+        def my_cmd(req):
+            print(f"Got {req}")
+
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        try:
+            my_cmd(args=[])
+        except SystemExit:
+            pass
+        finally:
+            sys.stdout = sys.__stdout__
+
+        mock_prompt.assert_called()
+        self.assertIn("Got 1", captured_output.getvalue())
 
 if __name__ == '__main__':
     unittest.main()

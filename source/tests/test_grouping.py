@@ -74,5 +74,53 @@ class TestGrouping(unittest.TestCase):
         with self.assertRaises(SemanticError):
             group_command.add_command(not_a_command)
 
+    def test_child_command_state_is_reset_between_invocations(self):
+        @decorators.command("sub")
+        def sub_command():
+            print("sub executed")
+
+        @decorators.entry("app")
+        def main():
+            print("main executed")
+
+        main.add_command(sub_command)
+
+        first_buffer = io.StringIO()
+        with redirect_stdout(first_buffer):
+            main(args=["sub"])
+
+        first_output = first_buffer.getvalue().strip().splitlines()
+        self.assertEqual(first_output, ["main executed", "sub executed"])
+
+        second_buffer = io.StringIO()
+        with redirect_stdout(second_buffer):
+            main(args=[])
+
+        second_output = second_buffer.getvalue().strip().splitlines()
+        self.assertEqual(second_output, ["main executed"])
+
+    def test_unknown_equals_option_raises_semantic_error(self):
+        @decorators.option("--known")
+        @decorators.entry("app")
+        def main(known):
+            pass
+
+        with self.assertRaises(SemanticError):
+            main(args=["--unknown=1"])
+
+    def test_option_without_flags_raises_semantic_error(self):
+        with self.assertRaises(SemanticError):
+            @decorators.option()
+            @decorators.entry("app")
+            def main():
+                pass
+
+    def test_trap_without_flags_raises_semantic_error(self):
+        with self.assertRaises(SemanticError):
+            @decorators.trap(trap_callback=lambda: None)
+            @decorators.entry("app")
+            def main():
+                pass
+
 if __name__ == '__main__':
     unittest.main()

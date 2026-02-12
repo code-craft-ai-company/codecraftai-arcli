@@ -83,7 +83,11 @@ class ProgressiveOptionParser:
         # Handle missing required options if interaction is allowed
         if context and context.interaction_strategy == InteractionStrategy.ALLOW:
             for option in command.options.values():
-                if option.required and option._token is None and option.default is None:
+                token_missing = option._token is None
+                if not token_missing and option.mode in (OptionMode.Multiple, OptionMode.Counter):
+                    token_missing = len(option._token) == 0
+
+                if option.required and token_missing and option.default is None:
                      # It's required, hasn't been filled, and has no default
                      prompt_text = option.help if option.help else f"Enter value for {option.alias}"
                      user_input = prompt_for_input(prompt_text)
@@ -238,6 +242,10 @@ class ProgressiveOptionParser:
         elif len(pieces) == 3 and pieces[1] == '=':
             comp_flag = pieces[0]
             comp_val = pieces[2]
+
+            if comp_flag not in flags_lookup_table:
+                errmsg = f"Unknown option flag: '{comp_flag}'"
+                raise SemanticError(errmsg)
 
         else:
             errmsg = f"Parse error processing arg '{nxtarg}'"

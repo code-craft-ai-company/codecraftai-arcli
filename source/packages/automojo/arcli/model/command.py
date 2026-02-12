@@ -327,7 +327,11 @@ class Command:
                 
             if argn in parameter_table:
                 param = parameter_table[argn]
-                argv = param.get_value()
+                try:
+                    argv = param.get_value()
+                except ValueError as valerr:
+                    errmsg = f"A value error occurred while processing parameter '{argn}': {valerr}"
+                    raise SemanticError(errmsg) from valerr
                 callargs.append(argv)
             else:
                 fname = self._callable.__name__

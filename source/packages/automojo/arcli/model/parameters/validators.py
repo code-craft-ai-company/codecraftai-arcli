@@ -19,11 +19,7 @@ def Choice(choices: List[Any], case_sensitive: bool = True, base_type: Type[Para
         _choices = choices
         _case_sensitive = case_sensitive
 
-        def get_value(self) -> Any:
-            val = super().get_value()
-            if val is None:
-                return None
-
+        def _validate_choice_value(self, val: Any) -> Any:
             check_val = val
             valid_choices = self._choices
 
@@ -35,10 +31,27 @@ def Choice(choices: List[Any], case_sensitive: bool = True, base_type: Type[Para
                 errmsg = f"Invalid value '{val}'. Allowed values are: {', '.join(map(str, self._choices))}"
                 raise ValueError(errmsg)
 
-            # Return the original casing from the choices list if case insensitive match found
             if not self._case_sensitive:
                 idx = valid_choices.index(check_val)
                 return self._choices[idx]
+
+            return val
+
+        def get_value(self) -> Any:
+            if isinstance(self._tvalue, list):
+                validated_values = []
+                for titem in self._tvalue:
+                    citem = base_type(self._alias, titem).get_value()
+                    vitem = self._validate_choice_value(citem)
+                    validated_values.append(vitem)
+
+                return validated_values
+
+            val = super().get_value()
+            if val is None:
+                return None
+
+            val = self._validate_choice_value(val)
 
             return val
 
@@ -54,7 +67,25 @@ def Range(min_val: Optional[Union[int, float]] = None, max_val: Optional[Union[i
         _min = min_val
         _max = max_val
 
-        def get_value(self) -> int:
+        def _validate_range_value(self, val: int) -> int:
+            if self._min is not None and val < self._min:
+                raise ValueError(f"Value {val} is smaller than the minimum allowed value {self._min}")
+
+            if self._max is not None and val > self._max:
+                raise ValueError(f"Value {val} is larger than the maximum allowed value {self._max}")
+
+            return val
+
+        def get_value(self) -> Union[int, List[int], None]:
+            if isinstance(self._tvalue, list):
+                validated_values = []
+                for titem in self._tvalue:
+                    citem = IntegerParameter(self._alias, titem).get_value()
+                    vitem = self._validate_range_value(citem)
+                    validated_values.append(vitem)
+
+                return validated_values
+
             # Check if value is present before validation
             # IntegerParameter returns 0 for None, which might cause range validation failure
             if self._tvalue is None:
@@ -62,11 +93,7 @@ def Range(min_val: Optional[Union[int, float]] = None, max_val: Optional[Union[i
 
             val = super().get_value()
 
-            if self._min is not None and val < self._min:
-                raise ValueError(f"Value {val} is smaller than the minimum allowed value {self._min}")
-
-            if self._max is not None and val > self._max:
-                raise ValueError(f"Value {val} is larger than the maximum allowed value {self._max}")
+            val = self._validate_range_value(val)
 
             return val
 
@@ -79,11 +106,7 @@ def Path(exists: bool = False, file_okay: bool = True, dir_okay: bool = True,
     Factory that returns a parameter type for validating file system paths.
     """
     class PathParameter(StringParameter):
-        def get_value(self) -> str:
-            val = super().get_value()
-            if val is None:
-                return None
-
+        def _validate_path_value(self, val: str) -> str:
             if resolve_path:
                 val = os.path.abspath(val)
 
@@ -106,6 +129,24 @@ def Path(exists: bool = False, file_okay: bool = True, dir_okay: bool = True,
                      raise ValueError(f"Path '{val}' is not writable.")
 
             return val
+        
+        def get_value(self) -> Union[str, List[str], None]:
+            if isinstance(self._tvalue, list):
+                validated_values = []
+                for titem in self._tvalue:
+                    citem = StringParameter(self._alias, titem).get_value()
+                    vitem = self._validate_path_value(citem)
+                    validated_values.append(vitem)
+
+                return validated_values
+
+            val = super().get_value()
+            if val is None:
+                return None
+
+            val = self._validate_path_value(val)
+
+            return val
 
     return PathParameter
 
@@ -117,13 +158,27 @@ def Regex(pattern: str, flags: int = 0) -> Type[ParameterBase]:
     class RegexParameter(StringParameter):
         _pattern = re.compile(pattern, flags)
 
-        def get_value(self) -> str:
+        def _validate_regex_value(self, val: str) -> str:
+            if not self._pattern.match(val):
+                raise ValueError(f"Value '{val}' does not match pattern '{pattern}'")
+
+            return val
+        
+        def get_value(self) -> Union[str, List[str], None]:
+            if isinstance(self._tvalue, list):
+                validated_values = []
+                for titem in self._tvalue:
+                    citem = StringParameter(self._alias, titem).get_value()
+                    vitem = self._validate_regex_value(citem)
+                    validated_values.append(vitem)
+
+                return validated_values
+
             val = super().get_value()
             if val is None:
                 return None
 
-            if not self._pattern.match(val):
-                raise ValueError(f"Value '{val}' does not match pattern '{pattern}'")
+            val = self._validate_regex_value(val)
 
             return val
 
@@ -135,25 +190,30 @@ def Custom(converter: Callable[[str], Any]) -> Type[ParameterBase]:
     Factory that creates a parameter type with custom parsing logic.
     """
     class CustomParameter(ParameterBase):
-        def get_value(self) -> Any:
-            val = self._tvalue
-            if val is None:
-                return None
-
-            # Handle quotes stripping if similar logic is desired,
-            # or leave it to the converter.
-            # Generally, ParameterBase doesn't strip quotes, StringParameter does.
-            # Let's assume the converter gets the raw token (or list of tokens).
-
-            # But wait, StringParameter logic is useful.
-            # If the user passes "foo", they likely want foo.
-
-            # Let's strip quotes if it looks like a string, same as StringParameter
+        def _normalize_value(self, val: Any) -> Any:
             if isinstance(val, str):
                 if val.startswith('"') and val.endswith('"'):
                     val = val[1:-1]
                 elif val.startswith("'") and val.endswith("'"):
                     val = val[1:-1]
+
+            return val
+
+        def get_value(self) -> Any:
+            val = self._tvalue
+            if val is None:
+                return None
+
+            if isinstance(val, list):
+                converted_values = []
+                for titem in val:
+                    citem = self._normalize_value(titem)
+                    cvitem = converter(citem)
+                    converted_values.append(cvitem)
+
+                return converted_values
+
+            val = self._normalize_value(val)
 
             return converter(val)
 
