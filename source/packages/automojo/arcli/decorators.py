@@ -109,6 +109,10 @@ def option(*flags: str, alias: Optional[str]=None, ptype: Type[ParameterBase]=No
             errmsg = "The innermost decorator for a command must be 'entry', 'group' or 'command'"
             raise SemanticError(errmsg)
 
+        if len(flags) == 0:
+            errmsg = "Each option must have a flag."
+            raise SemanticError(errmsg)
+
         if len(flags) > 2:
             errmsg = "Each option can have only one double dash '--' flag and one single dash '-' flag."
             raise SemanticError(errmsg)
@@ -167,6 +171,10 @@ def trap(*flags: str, trap_callback: Callable, help: Optional[str]=None, group: 
             errmsg = "The innermost decorator for a command must be 'entry', 'group' or 'command'"
             raise SemanticError(errmsg)
 
+        if len(flags) == 0:
+            errmsg = "Each trap must have a flag."
+            raise SemanticError(errmsg)
+
         if len(flags) > 2:
             errmsg = "Each option can have only one double dash '--' flag and one single dash '-' flag."
             raise SemanticError(errmsg)
@@ -201,5 +209,4 @@ def trap(*flags: str, trap_callback: Callable, help: Optional[str]=None, group: 
         return command
 
     return decorator
-
 

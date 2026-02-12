@@ -260,17 +260,17 @@ class OptionField:
             param = DefaultParameter(self._alias, self._default)
             return param
 
-        if tvalue is not None:
-            if self._mode == OptionMode.Counter:
-                tvalue = len(self._token)
-
-        else:
+        if token_missing:
             if self._required:
                 errmsg = f"The '{self._flags}' option is required but was not provided."
                 option_name = self._flag_long or self._flag_short or str(self._flags)
                 option_type = self._ptype.__name__ if self._ptype else "unknown"
                 hint = f"Please provide the {option_name} option."
                 raise MissingOptionError(errmsg, option_name, option_type, hint)
+
+            tvalue = None
+        elif self._mode == OptionMode.Counter:
+            tvalue = len(self._token)
 
         param = self._ptype(self._alias, tvalue)
         

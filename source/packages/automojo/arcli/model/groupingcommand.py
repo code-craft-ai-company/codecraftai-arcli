@@ -111,6 +111,8 @@ class GroupingCommand(Command):
         return
 
     def prepare_callargs(self, context: CliContext, parser: ProgressiveOptionParser):
+        self._callchild = None
+
         # First prepare this command's arguments
         super().prepare_callargs(context, parser)
         

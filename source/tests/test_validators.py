@@ -17,10 +17,13 @@ sys.path.insert(0, str(repo_root))
 
 import automojo
 from source.tests import setup_mocks
+from automojo.errors.exceptions import SemanticError
 
 from automojo.arcli.model.parameters.validators import Choice, Range, Path as PathParam, Regex, Custom
 from automojo.arcli.model.parameters.parameterbase import ParameterBase
 from automojo.arcli.model.parameters.integerparameter import IntegerParameter
+from automojo.arcli.model.fields.optionfield import OptionMode
+from automojo.arcli import CliRunner, decorators
 
 class TestValidators(unittest.TestCase):
 
@@ -104,6 +107,165 @@ class TestValidators(unittest.TestCase):
         CustomType = Custom(my_converter)
 
         self.assertEqual(CustomType('custom', 'hello').get_value(), 'HELLO')
+
+    def test_validator_error_is_reclassified_with_parameter_name(self):
+        ChoiceType = Choice(["red", "green", "blue"])
+
+        @decorators.option("--color", ptype=ChoiceType)
+        @decorators.entry("app")
+        def main(color):
+            return
+
+        runner = CliRunner()
+        result = runner.invoke(main, args=["--color=orange"])
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertIsInstance(result.exception, SemanticError)
+        self.assertIn("parameter 'color'", str(result.exception))
+        self.assertIn("Invalid value 'orange'", str(result.exception))
+
+    def test_optional_multiple_choice_without_value_does_not_raise(self):
+        BreakpointType = Choice(["test-discovery", "testrun-start"])
+
+        @decorators.option(
+            "--breakpoint",
+            alias="breakpoints",
+            default=None,
+            required=False,
+            mode=OptionMode.Multiple,
+            ptype=BreakpointType
+        )
+        @decorators.entry("app")
+        def main(breakpoints):
+            print(breakpoints)
+
+        runner = CliRunner()
+        result = runner.invoke(main, args=[])
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertIsNone(result.exception)
+        self.assertEqual(result.stdout.strip(), "None")
+
+    def test_multiple_choice_validates_each_value(self):
+        BreakpointType = Choice(["test-discovery", "testrun-start"])
+
+        @decorators.option(
+            "--breakpoint",
+            alias="breakpoints",
+            default=None,
+            required=False,
+            mode=OptionMode.Multiple,
+            ptype=BreakpointType
+        )
+        @decorators.entry("app")
+        def main(breakpoints):
+            print(breakpoints)
+
+        runner = CliRunner()
+        result = runner.invoke(main, args=["--breakpoint=test-discovery", "--breakpoint=testrun-start"])
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertIsNone(result.exception)
+        self.assertEqual(result.stdout.strip(), "['test-discovery', 'testrun-start']")
+
+    def test_multiple_range_validates_each_value(self):
+        RangeType = Range(min_val=1, max_val=10)
+
+        @decorators.option(
+            "--count",
+            alias="counts",
+            default=None,
+            required=False,
+            mode=OptionMode.Multiple,
+            ptype=RangeType
+        )
+        @decorators.entry("app")
+        def main(counts):
+            print(counts)
+
+        runner = CliRunner()
+
+        result_ok = runner.invoke(main, args=["--count=1", "--count=10"])
+        self.assertEqual(result_ok.exit_code, 0)
+        self.assertIsNone(result_ok.exception)
+        self.assertEqual(result_ok.stdout.strip(), "[1, 10]")
+
+        result_bad = runner.invoke(main, args=["--count=11"])
+        self.assertEqual(result_bad.exit_code, 1)
+        self.assertIsInstance(result_bad.exception, SemanticError)
+        self.assertIn("parameter 'counts'", str(result_bad.exception))
+
+    def test_multiple_path_validates_each_value(self):
+        PathType = PathParam(exists=True, file_okay=True, dir_okay=False)
+
+        @decorators.option(
+            "--path",
+            alias="paths",
+            default=None,
+            required=False,
+            mode=OptionMode.Multiple,
+            ptype=PathType
+        )
+        @decorators.entry("app")
+        def main(paths):
+            print(paths)
+
+        runner = CliRunner()
+        current_file = str(Path(__file__).resolve())
+
+        result = runner.invoke(main, args=[f"--path={current_file}"])
+        self.assertEqual(result.exit_code, 0)
+        self.assertIsNone(result.exception)
+        self.assertEqual(result.stdout.strip(), f"['{current_file}']")
+
+    def test_multiple_regex_validates_each_value(self):
+        RegexType = Regex(r"^x+$")
+
+        @decorators.option(
+            "--token",
+            alias="tokens",
+            default=None,
+            required=False,
+            mode=OptionMode.Multiple,
+            ptype=RegexType
+        )
+        @decorators.entry("app")
+        def main(tokens):
+            print(tokens)
+
+        runner = CliRunner()
+
+        result_ok = runner.invoke(main, args=["--token=x", "--token=xx"])
+        self.assertEqual(result_ok.exit_code, 0)
+        self.assertIsNone(result_ok.exception)
+        self.assertEqual(result_ok.stdout.strip(), "['x', 'xx']")
+
+        result_bad = runner.invoke(main, args=["--token=y"])
+        self.assertEqual(result_bad.exit_code, 1)
+        self.assertIsInstance(result_bad.exception, SemanticError)
+        self.assertIn("parameter 'tokens'", str(result_bad.exception))
+
+    def test_multiple_custom_converts_each_value(self):
+        CustomType = Custom(lambda val: val.upper())
+
+        @decorators.option(
+            "--word",
+            alias="words",
+            default=None,
+            required=False,
+            mode=OptionMode.Multiple,
+            ptype=CustomType
+        )
+        @decorators.entry("app")
+        def main(words):
+            print(words)
+
+        runner = CliRunner()
+        result = runner.invoke(main, args=["--word=foo", "--word=bar"])
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertIsNone(result.exception)
+        self.assertEqual(result.stdout.strip(), "['FOO', 'BAR']")
 
 if __name__ == '__main__':
     unittest.main()
