@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "automojo-arcli"
-description = "automojo-arcli"
+description = "Advanced Re-Usable Commandline Interface Framework"
 version = "0.0.1"
-authors = []
+authors = ["AutomationX <automationx@automationmojo.com>"]
 readme = "README.rst"
-license = "LICENSE.txt"
+license = "LICENSE.md"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

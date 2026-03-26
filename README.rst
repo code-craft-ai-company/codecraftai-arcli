@@ -1,50 +1,52 @@
-=======================
-python-package-template
-=======================
-This is a template repository that can be used to quickly create a python package project.
+================================================================
+AutoMojo ARCLI (Advanced Reusable Command-Line Interface)
+================================================================
 
-=========================
-Features of this Template
-=========================
-* Machine Setup
-* Virtual Environment Setup (Poetry)
-* PyPi Publishing
+The AutoMojo ARCLI framework is a Python package that provides a decorator-based approach to building command-line interfaces. Unlike Click, which requires adding options one at a time to command nodes, ARCLI allows for creating reusable groups of options with templated help strings that can be applied to multiple commands.
 
-========================
-How to Use This Template
-========================
-- Click the 'Use this template' button
-- Fill in the information to create your repository
-- Checkout your new repository
-- Change the following in 'repository-config.ini'
+Features
+========
+- **Reusable Option Groups:** Define common options once and attach them to many commands.
+- **Templated Help Strings:** Dynamically render help text depending on the context of the command.
+- **Three-Tier Command Hierarchy:** Easily organize commands into `workspace`, `collection`, and `action` tiers for clarity and structure.
+- **Decorator-Driven:** Clean, declarative syntax to construct the CLI tree.
 
-  #. 'PROJECT NAME'
-  #. 'REPOSITORY_NAME'
+Installation
+============
+Using Poetry:
 
-- If you have machine dependencies to add, put them in 'setup-ubuntu-machine'
-- Modify the pyproject.toml file with the correct package-name, author, publishing information, etc.
-- Rename the VSCODE workspace file 'mv workspaces/default-workspace.template workspaces/(project name).template'
-- Replace the README.rst file with your own README
-- Update the LICENSE.txt file with your copyright information and license.
-- Add your dependencies with python poetry 'poetry add (dependency name)'
-- Drop your package code in 'source/packages'
-- Modify the name of your package root in 'pyproject.toml'
+.. code-block:: bash
 
-  #. 'packages = [{include="(root folder name)", from="source/packages"}]'
+    poetry add automojo-arcli
 
-=================
-Code Organization
-=================
-* .vscode - Common tasks
-* development - This is where the runtime environment scripts are located
-* repository-setup - Scripts for homing your repository and to your checkout and machine setup
-* userguide - Where you put your user guide
-* source/packages - Put your root folder here 'source/packages/(root-module-folder)'
-* workspaces - This is where you add VSCode workspaces templates and where workspaces show up when homed.
+Usage
+=====
+ARCLI is built on top of standard CLI parsing paradigms but drastically reduces boilerplate when standardizing common arguments across a suite of tools.
 
-==========
+.. code-block:: python
+
+    from automojo.arcli import command, option_group
+
+    @option_group("database_options")
+    def db_options():
+        pass
+    
+    @command("query")
+    @db_options.attach()
+    def run_query():
+        pass
+
+Development
+===========
+This repository provides a standard Poetry environment. 
+
+1. Setup the machine environment:
+   Run `repository-setup/setup-ubuntu-machine` (if applicable)
+
+2. Activate virtual environment:
+   Run `poetry shell` and `poetry install`
+
 References
 ==========
-
 - `User Guide <userguide/userguide.rst>`
 - `Coding Standards <userguide/10-00-coding-standards.rst>`
