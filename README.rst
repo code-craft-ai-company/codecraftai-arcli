@@ -1,52 +1,69 @@
-================================================================
-AutoMojo ARCLI (Advanced Reusable Command-Line Interface)
-================================================================
+=======================
+Automation Mojo ArCli
+=======================
 
-The AutoMojo ARCLI framework is a Python package that provides a decorator-based approach to building command-line interfaces. Unlike Click, which requires adding options one at a time to command nodes, ARCLI allows for creating reusable groups of options with templated help strings that can be applied to multiple commands.
+The ``automojo-arcli`` package is the command-line-interface toolkit used by the CLI entry points across the automojo suite (for example ``testbase``, ``testplus``, ``am-interop``, and the per-package ``cmdtree`` subcommands). It provides a declarative model for building rich CLI trees without tying the suite to a specific external framework.
 
-Features
-========
-- **Reusable Option Groups:** Define common options once and attach them to many commands.
-- **Templated Help Strings:** Dynamically render help text depending on the context of the command.
-- **Three-Tier Command Hierarchy:** Easily organize commands into `workspace`, `collection`, and `action` tiers for clarity and structure.
-- **Decorator-Driven:** Clean, declarative syntax to construct the CLI tree.
+Highlights
+==========
 
-Installation
-============
-Using Poetry:
+- Command hierarchy: ``Command``, ``GroupingCommand``, and ``EntryCommand`` under ``arcli/model/``.
+- Typed parameters: ``ParameterBase`` subclasses for booleans, integers, strings (plus optional and list variants).
+- Field descriptors: ``ArgField``, ``OptionField``, and ``TrapField``.
+- Runtime plumbing: ``Parsing``, ``HelpGenerator``, ``Interact``, and ``Decorators``.
+- ``CliRunner`` and ``Result`` pair under ``testing.py`` for unit-testing CLI commands.
+
+Repository Structure
+====================
+
+- ``development/`` - Runtime environment scripts.
+- ``repository-setup/`` - Repository homing and setup scripts.
+- ``source/packages/`` - Package source code.
+- ``source/tests/`` - ``unittest``-based tests.
+- ``source/examples/`` - Example CLI definitions.
+- ``specs/`` - CLI specifications and supporting documents.
+- ``userguide/`` - Standards, conventions, and documentation.
+
+Environment Setup
+=================
+
+When working in a Codex container:
 
 .. code-block:: bash
 
-    poetry add automojo-arcli
+   ./development/setup-agent-container
 
-Usage
-=====
-ARCLI is built on top of standard CLI parsing paradigms but drastically reduces boilerplate when standardizing common arguments across a suite of tools.
+For local development:
 
-.. code-block:: python
+.. code-block:: bash
 
-    from automojo.arcli import command, option_group
+   ./repository-setup/rehome-repository
+   ./development/setup-envrionment
 
-    @option_group("database_options")
-    def db_options():
-        pass
-    
-    @command("query")
-    @db_options.attach()
-    def run_query():
-        pass
+Running Tests
+=============
 
-Development
-===========
-This repository provides a standard Poetry environment. 
+Activate the virtual environment:
 
-1. Setup the machine environment:
-   Run `repository-setup/setup-ubuntu-machine` (if applicable)
+.. code-block:: bash
 
-2. Activate virtual environment:
-   Run `poetry shell` and `poetry install`
+   source .venv/bin/activate
 
-References
-==========
-- `User Guide <userguide/userguide.rst>`
-- `Coding Standards <userguide/10-00-coding-standards.rst>`
+Run ``unittest`` tests:
+
+.. code-block:: bash
+
+   python -m unittest discover -s source/tests -p "test_*.py"
+
+Standards and Conventions
+=========================
+
+- Naming conventions: ``userguide/10-02-naming-conventions.rst``
+- Code organization: ``userguide/10-01-code-organization.rst``
+- Coding standards: ``userguide/10-00-coding-standards.rst``
+
+Additional Resources
+====================
+
+- User guide entry point: ``userguide/userguide.rst``
+- CLI specifications: ``specs/cli/``
