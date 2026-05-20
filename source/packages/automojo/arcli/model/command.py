@@ -173,24 +173,30 @@ class Command:
         
         flag_short = option.flag_short
         flag_long = option.flag_long
+        flag_off = getattr(option, "_flag_off", None)
 
         if flag_short is not None and flag_short in self._flags_short:
             raise ValueError(f"Duplicate short flag: {flag_short}")
-        
+
         if flag_short is not None:
             self._flags_short[flag_short] = option
-        
+
         if flag_long in self._flags_long:
             raise ValueError(f"Duplicate long flag: {flag_long}")
-        
+
         self._flags_long[flag_long] = option
+
+        if flag_off is not None:
+            if flag_off in self._flags_long:
+                raise ValueError(f"Duplicate long flag: {flag_off}")
+            self._flags_long[flag_off] = option
 
         param_name = option.alias
 
         self._options[param_name] = option
 
         self._add_parameter(option)
-        
+
         return
 
     def add_trap(self, trap: TrapField, group_name: str = "*"):
