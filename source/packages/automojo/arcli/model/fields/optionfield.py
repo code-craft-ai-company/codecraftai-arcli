@@ -140,6 +140,15 @@ class OptionField:
         return self._default
     
     @property
+    def flag_off(self) -> Optional[str]:
+        """
+            Get the off (negation) flag for a boolean option, e.g. '--no-verbose'.
+
+            :returns: The off flag string, or None if not set.
+        """
+        return self._flag_off
+
+    @property
     def flag_long(self) -> Optional[str]:
         """
             Get the long flag for this option field.
