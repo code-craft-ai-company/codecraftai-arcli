@@ -53,7 +53,6 @@ def _destroy_body(spec_path: str, confirm: bool):
     except FileNotFoundError as ferr:
         sys.stderr.write("{}\n".format(str(ferr)))
         sys.exit(2)
-        return
 
     if confirm is not True:
         was_confirmed = _confirm_destroy()

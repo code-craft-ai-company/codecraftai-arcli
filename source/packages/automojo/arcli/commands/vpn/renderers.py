@@ -23,6 +23,18 @@ _JSON_FORMAT = "json"
 ALLOWED_FORMATS = (_TEXT_FORMAT, _JSON_FORMAT)
 
 
+def is_allowed_format(*, fmt: str) -> bool:
+    """
+        Report whether ``fmt`` is an accepted output format.
+
+        :param fmt: The output format requested on the command line.
+
+        :returns: ``True`` when the format is supported.
+    """
+    rtnval = fmt in ALLOWED_FORMATS
+    return rtnval
+
+
 def render_authkey(*, key: str, ephemeral: bool) -> str:
     """
         Render a minted auth key.  When ``ephemeral`` is False a warning is

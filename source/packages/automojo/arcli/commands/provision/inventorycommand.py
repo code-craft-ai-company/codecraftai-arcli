@@ -35,7 +35,6 @@ def _inventory_body(spec_path: str, format: str):
     except FileNotFoundError as ferr:
         sys.stderr.write("{}\n".format(str(ferr)))
         sys.exit(2)
-        return
 
     aspects = build_default_provisioning_aspects()
     engine = build_engine(spec=spec)

@@ -17,7 +17,9 @@ from automojo.arcli import decorators
 
 from automojo.arcli.commands.common.aspectsfactory import build_default_vpn_aspects
 from automojo.arcli.commands.vpn.providerresolver import resolve_vpn_provider
-from automojo.arcli.commands.vpn.renderers import render_status
+from automojo.arcli.commands.vpn.renderers import (
+    ALLOWED_FORMATS, is_allowed_format, render_status
+)
 
 
 def _status_body(provider: str, format: str):
@@ -27,17 +29,21 @@ def _status_body(provider: str, format: str):
         :param provider: ``tailscale`` or ``twingate``.
         :param format: ``text`` or ``json``.
     """
+    if not is_allowed_format(fmt=format):
+        sys.stderr.write(
+            "Unknown --format '{}'.  Allowed: {}\n".format(format, ", ".join(ALLOWED_FORMATS))
+        )
+        sys.exit(2)
+
     try:
         client, _ = resolve_vpn_provider(provider_name=provider)
     except ValueError as verr:
         sys.stderr.write("{}\n".format(str(verr)))
         sys.exit(2)
-        return
 
     if client is None:
         sys.stderr.write("No VPN client configured for provider '{}'\n".format(provider))
         sys.exit(2)
-        return
 
     aspects = build_default_vpn_aspects()
     status = client.status(aspects=aspects)
