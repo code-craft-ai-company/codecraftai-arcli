@@ -59,7 +59,6 @@ def _apply_body(spec_path: str, format: str, confirm: bool, dry_run: bool):
     except FileNotFoundError as ferr:
         sys.stderr.write("{}\n".format(str(ferr)))
         sys.exit(2)
-        return
 
     engine = build_engine(spec=spec)
 

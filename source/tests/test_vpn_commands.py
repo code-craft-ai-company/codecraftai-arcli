@@ -92,7 +92,7 @@ class TestVpnCommands(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(root, args=[
             "vpn", "mint-authkey", "--provider=tailscale",
-            "--tag=tag:lab", "--ttl-seconds=900",
+            "--tag=tag:lab", "--ttl-seconds=900", "--show-secret",
         ])
         self.assertEqual(result.exit_code, 0, msg=result.stderr)
         self.assertEqual(self._control_plane.mint_authkey.call_count, 1)
@@ -109,9 +109,48 @@ class TestVpnCommands(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(root, args=[
             "vpn", "mint-authkey", "--provider=tailscale", "--no-ephemeral",
+            "--show-secret",
         ])
         self.assertEqual(result.exit_code, 0, msg=result.stderr)
         self.assertIn("WARNING", result.stdout)
+        return
+
+    def test_mint_authkey_secret_not_emitted_without_show_secret(self) -> None:
+        # Regression for the audit mint-authkey secret-to-stdout finding:
+        # without --show-secret (and without --out-file) the minted key must
+        # not be printed and the command must exit non-zero.
+        root = _make_root()
+        runner = CliRunner()
+        result = runner.invoke(root, args=[
+            "vpn", "mint-authkey", "--provider=tailscale",
+        ])
+        self.assertNotEqual(result.exit_code, 0)
+        self.assertNotIn("tskey-auth-xxxx", result.stdout)
+        self.assertEqual(self._control_plane.mint_authkey.call_count, 0)
+        return
+
+    def test_mint_authkey_writes_key_to_restricted_file(self) -> None:
+        # Regression for the audit mint-authkey finding: --out-file writes the
+        # minted key to an owner-readable-only (0600) file rather than stdout.
+        import os
+        import stat
+        import tempfile
+
+        root = _make_root()
+        runner = CliRunner()
+        tmp_dir = tempfile.mkdtemp()
+        out_path = os.path.join(tmp_dir, "authkey.txt")
+        result = runner.invoke(root, args=[
+            "vpn", "mint-authkey", "--provider=tailscale",
+            "--out-file={}".format(out_path),
+        ])
+        self.assertEqual(result.exit_code, 0, msg=result.stderr)
+        self.assertNotIn("tskey-auth-xxxx", result.stdout)
+        with open(out_path, "r") as fhandle:
+            written = fhandle.read()
+        self.assertIn("tskey-auth-xxxx", written)
+        file_mode = stat.S_IMODE(os.stat(out_path).st_mode)
+        self.assertEqual(file_mode, stat.S_IRUSR | stat.S_IWUSR)
         return
 
     def test_mint_authkey_unknown_provider_rejected(self) -> None:
@@ -191,6 +230,37 @@ class TestVpnCommands(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(root, args=["vpn", "status", "--provider=tailscale"])
         self.assertNotEqual(result.exit_code, 0)
+        return
+
+    def test_status_passes_vpn_client_aspects(self) -> None:
+        # Regression for audit IL-H5: status() was handed a plain Aspects
+        # object, which lacks the VPN-specific fields the interop clients
+        # read (dry_run, command_timeout_seconds), causing an AttributeError.
+        # The aspects passed must expose those fields.
+        root = _make_root()
+        runner = CliRunner()
+        result = runner.invoke(root, args=["vpn", "status", "--provider=tailscale"])
+        self.assertEqual(result.exit_code, 0, msg=result.stderr)
+        _, kwargs = self._client.status.call_args
+        aspects = kwargs["aspects"]
+        self.assertTrue(hasattr(aspects, "dry_run"))
+        self.assertTrue(hasattr(aspects, "command_timeout_seconds"))
+        self.assertTrue(hasattr(aspects, "elevated"))
+        self.assertTrue(hasattr(aspects, "status_refresh_seconds"))
+        return
+
+    def test_status_unknown_format_exits_cleanly(self) -> None:
+        # Regression for the audit --format validation finding: an unknown
+        # --format value exits non-zero with a message rather than raising
+        # an unhandled ValueError stack trace.
+        root = _make_root()
+        runner = CliRunner()
+        result = runner.invoke(root, args=[
+            "vpn", "status", "--provider=tailscale", "--format=xml",
+        ])
+        self.assertNotEqual(result.exit_code, 0)
+        self.assertIn("Unknown --format", result.stderr)
+        self.assertEqual(self._client.status.call_count, 0)
         return
 
 

@@ -87,7 +87,7 @@ class TestVpnCliProperties(unittest.TestCase):
         self._control_plane.mint_authkey.reset_mock()
         root = _make_root()
         runner = CliRunner()
-        args = ["vpn", "mint-authkey", "--provider=tailscale"]
+        args = ["vpn", "mint-authkey", "--provider=tailscale", "--show-secret"]
         for tg in tags:
             args.append("--tag={}".format(tg))
         result = runner.invoke(root, args=args)
@@ -104,7 +104,8 @@ class TestVpnCliProperties(unittest.TestCase):
         root = _make_root()
         runner = CliRunner()
         result = runner.invoke(root, args=[
-            "vpn", "mint-authkey", "--provider=tailscale", "--ttl-seconds={}".format(ttl),
+            "vpn", "mint-authkey", "--provider=tailscale",
+            "--ttl-seconds={}".format(ttl), "--show-secret",
         ])
         self.assertEqual(result.exit_code, 0, msg=result.stderr)
         _, kwargs = self._control_plane.mint_authkey.call_args
