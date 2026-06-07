@@ -12,14 +12,14 @@ sys.path.insert(0, str(repo_root))
 
 from source.tests import setup_mocks
 
-from automojo.arcli.interact import InteractionStrategy, prompt_for_input, confirm, Spinner
-from automojo.arcli.model.clicontext import CliContext
-from automojo.arcli.model.entrycommand import EntryCommand
-from automojo.arcli.model.command import Command
-from automojo.arcli.decorators import entry, option, argument
-from automojo.arcli.parsing import ProgressiveOptionParser
-from automojo.arcli.errors import MissingOptionError
-from automojo.arcli.model.fields.optionfield import OptionMode
+from ccai.arcli.interact import InteractionStrategy, prompt_for_input, confirm, Spinner
+from ccai.arcli.model.clicontext import CliContext
+from ccai.arcli.model.entrycommand import EntryCommand
+from ccai.arcli.model.command import Command
+from ccai.arcli.decorators import entry, option, argument
+from ccai.arcli.parsing import ProgressiveOptionParser
+from ccai.arcli.errors import MissingOptionError
+from ccai.arcli.model.fields.optionfield import OptionMode
 
 class TestInteractionUtilities(unittest.TestCase):
 
@@ -67,7 +67,7 @@ class TestInteractionIntegration(unittest.TestCase):
 
         self.assertEqual(my_cmd._context.interaction_strategy, InteractionStrategy.ALLOW)
 
-    @patch('automojo.arcli.parsing.prompt_for_input', return_value='interactive_val')
+    @patch('ccai.arcli.parsing.prompt_for_input', return_value='interactive_val')
     def test_missing_required_option_prompts_when_allowed(self, mock_prompt):
 
         @option('--req', required=True)
@@ -108,7 +108,7 @@ class TestInteractionIntegration(unittest.TestCase):
         except Exception as e:
             self.fail(f"Raised wrong exception: {e}")
 
-    @patch('automojo.arcli.parsing.prompt_for_input', return_value='interactive_arg')
+    @patch('ccai.arcli.parsing.prompt_for_input', return_value='interactive_arg')
     def test_missing_required_argument_prompts_when_allowed(self, mock_prompt):
         @argument('myarg', required=True)
         @entry(interaction_strategy=InteractionStrategy.ALLOW)
@@ -129,7 +129,7 @@ class TestInteractionIntegration(unittest.TestCase):
         mock_prompt.assert_called()
         self.assertIn("Got interactive_arg", captured_output.getvalue())
 
-    @patch('automojo.arcli.parsing.prompt_for_input', return_value='interactive_multi')
+    @patch('ccai.arcli.parsing.prompt_for_input', return_value='interactive_multi')
     def test_missing_required_multiple_option_prompts_when_allowed(self, mock_prompt):
         @option('--req', required=True, mode=OptionMode.Multiple)
         @entry(interaction_strategy=InteractionStrategy.ALLOW)
@@ -149,7 +149,7 @@ class TestInteractionIntegration(unittest.TestCase):
         mock_prompt.assert_called()
         self.assertIn("Got ['interactive_multi']", captured_output.getvalue())
 
-    @patch('automojo.arcli.parsing.prompt_for_input', return_value='interactive_counter')
+    @patch('ccai.arcli.parsing.prompt_for_input', return_value='interactive_counter')
     def test_missing_required_counter_option_prompts_when_allowed(self, mock_prompt):
         @option('--req', required=True, mode=OptionMode.Counter)
         @entry(interaction_strategy=InteractionStrategy.ALLOW)

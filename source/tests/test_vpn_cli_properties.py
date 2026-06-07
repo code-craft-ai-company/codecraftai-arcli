@@ -15,11 +15,11 @@ from source.tests import setup_mocks  # noqa: F401
 
 from hypothesis import given, strategies as st, settings, HealthCheck
 
-from automojo.arcli import CliRunner, decorators
-from automojo.arcli.commands.vpn import (
+from ccai.arcli import CliRunner, decorators
+from ccai.arcli.commands.vpn import (
     mint_authkey_command, register_vpn_commands,
 )
-from automojo.arcli.commands.vpn import providerresolver
+from ccai.arcli.commands.vpn import providerresolver
 
 
 @dataclass

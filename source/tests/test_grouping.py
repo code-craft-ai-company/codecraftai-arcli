@@ -10,10 +10,10 @@ sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
 from source.tests import setup_mocks
-from automojo.errors.exceptions import SemanticError
+from ccai.errors.exceptions import SemanticError
 
-from automojo.arcli import decorators
-from automojo.arcli.model.groupingcommand import GroupingCommand
+from ccai.arcli import decorators
+from ccai.arcli.model.groupingcommand import GroupingCommand
 
 class TestGrouping(unittest.TestCase):
 

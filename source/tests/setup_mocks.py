@@ -7,11 +7,11 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
-import automojo
+import ccai
 
-# Mocking automojo.errors dependencies
-if not hasattr(automojo, 'errors'):
-    err_mod = types.ModuleType('automojo.errors.exceptions')
+# Mocking ccai.errors dependencies
+if not hasattr(ccai, 'errors'):
+    err_mod = types.ModuleType('ccai.errors.exceptions')
     class SemanticError(Exception): pass
     class MissingOptionError(Exception): pass
     class AbstractMethodError(Exception): pass
@@ -19,9 +19,9 @@ if not hasattr(automojo, 'errors'):
     err_mod.MissingOptionError = MissingOptionError
     err_mod.AbstractMethodError = AbstractMethodError
 
-    errors_pkg = types.ModuleType('automojo.errors')
+    errors_pkg = types.ModuleType('ccai.errors')
     errors_pkg.exceptions = err_mod
 
-    automojo.errors = errors_pkg
-    sys.modules['automojo.errors'] = errors_pkg
-    sys.modules['automojo.errors.exceptions'] = err_mod
+    ccai.errors = errors_pkg
+    sys.modules['ccai.errors'] = errors_pkg
+    sys.modules['ccai.errors.exceptions'] = err_mod

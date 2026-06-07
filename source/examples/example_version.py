@@ -1,7 +1,7 @@
 
 import sys
 
-from automojo.arcli import decorators
+from ccai.arcli import decorators
 
 
 def display_version():

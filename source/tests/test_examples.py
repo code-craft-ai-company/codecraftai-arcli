@@ -7,12 +7,12 @@ import unittest
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
-import automojo
+import ccai
 
 from source.tests import setup_mocks
 
 import importlib
-from automojo.arcli import CliRunner
+from ccai.arcli import CliRunner
 
 def load_example_command_entry():
     mod = importlib.import_module('source.examples.example_command')

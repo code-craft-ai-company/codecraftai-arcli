@@ -17,11 +17,11 @@ from source.tests import setup_mocks  # noqa: F401
 import yaml
 from hypothesis import given, strategies as st, settings, HealthCheck
 
-from automojo.arcli import CliRunner, decorators
-from automojo.arcli.commands.provision import (
+from ccai.arcli import CliRunner, decorators
+from ccai.arcli.commands.provision import (
     plan_command, register_provision_commands,
 )
-from automojo.arcli.commands.provision import enginefactory
+from ccai.arcli.commands.provision import enginefactory
 
 
 class FakePlan:

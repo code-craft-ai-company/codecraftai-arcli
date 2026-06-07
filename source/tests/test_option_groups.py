@@ -10,11 +10,11 @@ sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
 from source.tests import setup_mocks
-from automojo.errors.exceptions import SemanticError
+from ccai.errors.exceptions import SemanticError
 
-from automojo.arcli.model.optiongroup import OptionGroup
-from automojo.arcli.model.fields.optionfield import OptionField
-from automojo.arcli import decorators
+from ccai.arcli.model.optiongroup import OptionGroup
+from ccai.arcli.model.fields.optionfield import OptionField
+from ccai.arcli import decorators
 
 class MyOptions(OptionGroup):
     name = "My Options"

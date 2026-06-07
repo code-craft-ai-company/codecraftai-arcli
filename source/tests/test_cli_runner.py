@@ -9,10 +9,10 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root)) # For examples
 
-import automojo
+import ccai
 from source.tests import setup_mocks
 
-from automojo.arcli import CliRunner
+from ccai.arcli import CliRunner
 import importlib
 
 def load_example_command_entry():

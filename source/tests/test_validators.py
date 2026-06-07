@@ -15,15 +15,15 @@ sys.path.insert(0, str(repo_root / 'source/packages'))
 
 sys.path.insert(0, str(repo_root))
 
-import automojo
+import ccai
 from source.tests import setup_mocks
-from automojo.errors.exceptions import SemanticError
+from ccai.errors.exceptions import SemanticError
 
-from automojo.arcli.model.parameters.validators import Choice, Range, Path as PathParam, Regex, Custom
-from automojo.arcli.model.parameters.parameterbase import ParameterBase
-from automojo.arcli.model.parameters.integerparameter import IntegerParameter
-from automojo.arcli.model.fields.optionfield import OptionMode
-from automojo.arcli import CliRunner, decorators
+from ccai.arcli.model.parameters.validators import Choice, Range, Path as PathParam, Regex, Custom
+from ccai.arcli.model.parameters.parameterbase import ParameterBase
+from ccai.arcli.model.parameters.integerparameter import IntegerParameter
+from ccai.arcli.model.fields.optionfield import OptionMode
+from ccai.arcli import CliRunner, decorators
 
 class TestValidators(unittest.TestCase):
 

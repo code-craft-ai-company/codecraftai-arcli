@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "automojo-arcli"
+name = "codecraftai-arcli"
 description = "Advanced Re-Usable Commandline Interface Framework"
 version = "0.0.1"
-authors = ["AutomationX <automationx@automationmojo.com>"]
+authors = ["CodeCraftX <automationx@code-craft.ai>"]
 readme = "README.rst"
 license = "LICENSE.md"
 classifiers = [
@@ -13,11 +13,11 @@ classifiers = [
 keywords = [
     "python"
 ]
-packages = [{include="automojo", from="source/packages"}]
+packages = [{include="ccai", from="source/packages"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
-automojo-errors = { git = "https://github.com/automationmojo/automojo-errors.git", rev = "main" }
+codecraftai-errors = { git = "https://github.com/automationmojo/codecraftai-errors.git", rev = "main" }
 
 [build-system]
 requires = ["poetry-core"]

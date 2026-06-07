@@ -14,9 +14,9 @@ default `Aspects` object, (3) calls one method on `ProvisioningEngine`, (4)
 renders the returned object.  No venue-specific code lives in the CLI.
 
 See Also:
-- `automojo-arcli/specs/cli/design.md` (root decorator/grouping architecture)
-- `automojo-provisioning/specs/provisioning-engine-pipeline/design.md`
-- `automojo-provisioning/specs/cloud-provisioner-lifecycle/design.md`
+- `codecraftai-arcli/specs/cli/design.md` (root decorator/grouping architecture)
+- `codecraftai-provisioning/specs/provisioning-engine-pipeline/design.md`
+- `codecraftai-provisioning/specs/cloud-provisioner-lifecycle/design.md`
 
 ---
 
@@ -71,11 +71,11 @@ All four use a shared `OptionGroup` named `provision_common` carrying
 The CLI itself defines no domain types.  It depends on:
 
 - `ProvisioningEngine` (constructor + four lifecycle methods) from
-  `automojo-provisioning`.
+  `codecraftai-provisioning`.
 - `ProvisioningSpec`, `ProvisioningPlan`, `ProvisioningResult`,
   `ProvisionedResource` data classes (return types) from the same package.
 - The arcli decorator surface (`@entry`, `@group`, `@command`, `@argument`,
-  `@option`) from `automojo-arcli`.
+  `@option`) from `codecraftai-arcli`.
 
 Helper module:
 
@@ -127,7 +127,7 @@ def provision_plan(context, spec_path, format):
 ## Module Layout
 
 ```
-source/packages/automojo/arcli/commands/provision/
+source/packages/ccai/arcli/commands/provision/
 ├── __init__.py
 ├── provisiongroup.py        ← `provision` GroupingCommand
 ├── plancommand.py           ← `provision plan`
@@ -138,7 +138,7 @@ source/packages/automojo/arcli/commands/provision/
 ├── aspectsfactory.py        ← build_default_aspects()
 └── renderers.py             ← render_plan / render_result / render_inventory
 
-source/testroots/testbase/automojo/tests/arcli/commands/provision/
+source/testroots/testbase/ccai/tests/arcli/commands/provision/
 ├── test_plancommand.py
 ├── test_applycommand.py
 ├── test_destroycommand.py
@@ -153,10 +153,10 @@ the dominant class or callable.
 
 ## See Also
 
-- `automojo-arcli/specs/cli/design.md`
-- `automojo-arcli/specs/cli-vpn-commands/design.md`
-- `automojo-provisioning/specs/provisioning-engine-pipeline/design.md`
-- `automojo-provisioning/specs/cloud-provisioner-lifecycle/design.md`
+- `codecraftai-arcli/specs/cli/design.md`
+- `codecraftai-arcli/specs/cli-vpn-commands/design.md`
+- `codecraftai-provisioning/specs/provisioning-engine-pipeline/design.md`
+- `codecraftai-provisioning/specs/cloud-provisioner-lifecycle/design.md`
 
 ---
 
