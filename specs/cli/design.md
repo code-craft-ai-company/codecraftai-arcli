@@ -2,7 +2,7 @@
 
 ## Overview
 
-The AutoMojo ARCLI (Automation Mojo Advanced Command Line Interface) framework is a Python package that provides a decorator-based approach to building command-line interfaces. Unlike Click, which requires adding options one at a time to command nodes, ARCLI allows for creating reusable groups of options with templated help strings that can be applied to multiple commands.
+The AutoMojo ARCLI (Code Craft AI Advanced Command Line Interface) framework is a Python package that provides a decorator-based approach to building command-line interfaces. Unlike Click, which requires adding options one at a time to command nodes, ARCLI allows for creating reusable groups of options with templated help strings that can be applied to multiple commands.
 
 ## Core Architecture
 

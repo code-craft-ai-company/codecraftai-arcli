@@ -1,6 +1,6 @@
 # Implementation Plan — cli-vpn-commands
 
-- [x] 1. Create the `automojo/arcli/commands/vpn/` package skeleton with an
+- [x] 1. Create the `ccai/arcli/commands/vpn/` package skeleton with an
       `__init__.py` that registers the leaf modules on import.
 - [x] 2. Implement `vpngroup.py` exposing a `GroupingCommand` named `"vpn"` and
       attach it to the arcli root `EntryCommand`.
@@ -8,7 +8,7 @@
       provider_name)` returning a `(IVPNClient?, IVPNControlPlane?)` tuple
       and raising `ConfigurationError` on unknown providers.
 - [x] 4. Reuse `build_default_aspects()` from `cli-provision-commands` (or
-      promote it to a shared `automojo/arcli/commands/common/aspectsfactory.py`).
+      promote it to a shared `ccai/arcli/commands/common/aspectsfactory.py`).
 - [x] 5. Implement `renderers.py` with `render_authkey`, `render_peers`, and
       `render_status` covering both `text` and `json` formats.
 - [x] 6. Implement `mintauthkeycommand.py` — wires
@@ -31,6 +31,6 @@
 - [x] 13. Add a `hypothesis` property test `test_ttl_option_accepts_integer_range`
        covering Requirement 7 acceptance criterion 3.
 - [x] 14. Cross-link this spec from
-       `automojo-interfaces/specs/vpn-client-protocol/design.md` and
-       `automojo-interfaces/specs/vpn-control-plane-protocol/design.md`
+       `codecraftai-interfaces/specs/vpn-client-protocol/design.md` and
+       `codecraftai-interfaces/specs/vpn-control-plane-protocol/design.md`
        under their See Also sections.

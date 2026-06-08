@@ -1,8 +1,8 @@
 =======================
-Automation Mojo ArCli
+Code Craft AI ArCli
 =======================
 
-The ``automojo-arcli`` package is the command-line-interface toolkit used by the CLI entry points across the automojo suite (for example ``testbase``, ``testplus``, ``am-interop``, and the per-package ``cmdtree`` subcommands). It provides a declarative model for building rich CLI trees without tying the suite to a specific external framework.
+The ``codecraftai-arcli`` package is the command-line-interface toolkit used by the CLI entry points across the ccai suite (for example ``testbase``, ``testplus``, ``am-interop``, and the per-package ``cmdtree`` subcommands). It provides a declarative model for building rich CLI trees without tying the suite to a specific external framework.
 
 Highlights
 ==========

@@ -4,7 +4,7 @@ from typing import Optional
 import sys
 
 
-from automojo.arcli import decorators
+from ccai.arcli import decorators
 
 
 @decorators.option("--some-a")

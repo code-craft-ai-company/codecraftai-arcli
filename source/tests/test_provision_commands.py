@@ -16,8 +16,8 @@ from source.tests import setup_mocks  # noqa: F401
 
 import yaml
 
-from automojo.arcli import CliRunner, decorators
-from automojo.arcli.commands.provision import (
+from ccai.arcli import CliRunner, decorators
+from ccai.arcli.commands.provision import (
     apply_command,
     destroy_command,
     inventory_command,
@@ -25,7 +25,7 @@ from automojo.arcli.commands.provision import (
     provision_group,
     register_provision_commands,
 )
-from automojo.arcli.commands.provision import enginefactory
+from ccai.arcli.commands.provision import enginefactory
 
 
 SAMPLE_SPEC = {

@@ -10,13 +10,13 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
-import automojo
+import ccai
 from source.tests import setup_mocks
 
-from automojo.arcli.model.parameters.optionalbooleanparameter import OptionalBooleanParameter
-from automojo.arcli.model.parameters.booleanparameter import BooleanParameter
-from automojo.arcli.decorators import entry, option
-from automojo.arcli import CliRunner
+from ccai.arcli.model.parameters.optionalbooleanparameter import OptionalBooleanParameter
+from ccai.arcli.model.parameters.booleanparameter import BooleanParameter
+from ccai.arcli.decorators import entry, option
+from ccai.arcli import CliRunner
 
 class TestOptionalBooleanParameter(unittest.TestCase):
 

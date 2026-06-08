@@ -4,20 +4,20 @@
 
 The `cli-vpn-commands` feature adds three `arcli` subcommands —
 `vpn mint-authkey`, `vpn peers`, `vpn status` — that act as thin wrappers over
-the VPN abstractions in `automojo-interfaces` (`IVPNClient`,
-`IVPNControlPlane`) as implemented by `automojo-interop`'s Tailscale and
+the VPN abstractions in `codecraftai-interfaces` (`IVPNClient`,
+`IVPNControlPlane`) as implemented by `codecraftai-interop`'s Tailscale and
 Twingate clients.  Per §1.14 of `IMPLEMENTATION-PLAN.md` and §2.9 of
 `PLAN-VPN-AND-CLOUD-PROVISIONING.md`, the CLI surface contains **no business
 logic**: each subcommand selects a provider implementation via `--provider` and
 delegates to one method on the underlying protocol.
 
 The subcommands follow the existing arcli decorator/grouping pattern documented
-in `automojo-arcli/specs/cli/design.md` (root → `vpn` group → leaf commands).
+in `codecraftai-arcli/specs/cli/design.md` (root → `vpn` group → leaf commands).
 
 See Also:
-- `automojo-arcli/specs/cli/design.md`
-- `automojo-interfaces/specs/vpn-client-protocol/requirements.md`
-- `automojo-interfaces/specs/vpn-control-plane-protocol/requirements.md`
+- `codecraftai-arcli/specs/cli/design.md`
+- `codecraftai-interfaces/specs/vpn-client-protocol/requirements.md`
+- `codecraftai-interfaces/specs/vpn-control-plane-protocol/requirements.md`
 
 ---
 
@@ -115,7 +115,7 @@ on.
 ### Requirement 6: No Business Logic in the CLI
 
 **User Story:** As a maintainer, I want to be sure that the CLI layer never
-makes VPN decisions itself so that all behaviour stays in `automojo-interop`.
+makes VPN decisions itself so that all behaviour stays in `codecraftai-interop`.
 
 #### Acceptance Criteria
 

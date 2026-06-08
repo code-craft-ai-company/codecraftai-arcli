@@ -13,14 +13,14 @@ sys.path.insert(0, str(repo_root))
 
 from source.tests import setup_mocks  # noqa: F401
 
-from automojo.arcli import CliRunner, decorators
-from automojo.arcli.commands.vpn import (
+from ccai.arcli import CliRunner, decorators
+from ccai.arcli.commands.vpn import (
     mint_authkey_command,
     peers_command,
     status_command,
     register_vpn_commands,
 )
-from automojo.arcli.commands.vpn import providerresolver
+from ccai.arcli.commands.vpn import providerresolver
 
 
 @dataclass

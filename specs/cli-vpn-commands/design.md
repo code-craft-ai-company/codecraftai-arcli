@@ -17,10 +17,10 @@ calls one method on the protocol, (4) renders the returned object.  No
 provider-specific code lives in the CLI.
 
 See Also:
-- `automojo-arcli/specs/cli/design.md` (root decorator/grouping architecture)
-- `automojo-arcli/specs/cli-provision-commands/design.md`
-- `automojo-interfaces/specs/vpn-client-protocol/design.md`
-- `automojo-interfaces/specs/vpn-control-plane-protocol/design.md`
+- `codecraftai-arcli/specs/cli/design.md` (root decorator/grouping architecture)
+- `codecraftai-arcli/specs/cli-provision-commands/design.md`
+- `codecraftai-interfaces/specs/vpn-client-protocol/design.md`
+- `codecraftai-interfaces/specs/vpn-control-plane-protocol/design.md`
 
 ---
 
@@ -55,8 +55,8 @@ See Also:
 
 The `VPNProviderResolver` reads provider configuration (credentials, endpoint,
 control-plane class name) from the same `landscape.yaml`-style file consumed by
-`automojo-landscaping` and returns a constructed implementation instance.  The
-resolver lives in `automojo-interop` (not in the CLI), keeping the CLI free of
+`codecraftai-landscaping` and returns a constructed implementation instance.  The
+resolver lives in `codecraftai-interop` (not in the CLI), keeping the CLI free of
 construction logic.
 
 ---
@@ -79,10 +79,10 @@ option.  `peers` and `status` additionally share `--format`.
 The CLI itself defines no domain types.  It depends on:
 
 - `IVPNClient`, `IVPNControlPlane`, `VPNStatus`, `VPNDeviceRecord` from
-  `automojo-interfaces`.
-- `VPNProviderResolver` from `automojo-interop` (or a near-equivalent helper
+  `codecraftai-interfaces`.
+- `VPNProviderResolver` from `codecraftai-interop` (or a near-equivalent helper
   if its home shifts during implementation).
-- The arcli decorator surface from `automojo-arcli`.
+- The arcli decorator surface from `codecraftai-arcli`.
 
 Helper:
 
@@ -129,7 +129,7 @@ def vpn_peers(context, provider, format):
 ## Module Layout
 
 ```
-source/packages/automojo/arcli/commands/vpn/
+source/packages/ccai/arcli/commands/vpn/
 ├── __init__.py
 ├── vpngroup.py              ← `vpn` GroupingCommand
 ├── mintauthkeycommand.py    ← `vpn mint-authkey`
@@ -138,7 +138,7 @@ source/packages/automojo/arcli/commands/vpn/
 ├── providerresolver.py      ← resolve_vpn_provider(...)
 └── renderers.py             ← render_authkey / render_peers / render_status
 
-source/testroots/testbase/automojo/tests/arcli/commands/vpn/
+source/testroots/testbase/ccai/tests/arcli/commands/vpn/
 ├── test_mintauthkeycommand.py
 ├── test_peerscommand.py
 ├── test_statuscommand.py
@@ -152,11 +152,11 @@ the dominant class or callable.
 
 ## See Also
 
-- `automojo-arcli/specs/cli/design.md`
-- `automojo-arcli/specs/cli-provision-commands/design.md`
-- `automojo-interfaces/specs/vpn-client-protocol/design.md`
-- `automojo-interfaces/specs/vpn-control-plane-protocol/design.md`
-- `automojo-interop` Tailscale and Twingate client specs
+- `codecraftai-arcli/specs/cli/design.md`
+- `codecraftai-arcli/specs/cli-provision-commands/design.md`
+- `codecraftai-interfaces/specs/vpn-client-protocol/design.md`
+- `codecraftai-interfaces/specs/vpn-control-plane-protocol/design.md`
+- `codecraftai-interop` Tailscale and Twingate client specs
 
 ---
 

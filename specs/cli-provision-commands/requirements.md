@@ -4,7 +4,7 @@
 
 The `cli-provision-commands` feature adds four `arcli` subcommands —
 `provision plan`, `provision apply`, `provision destroy`, `provision inventory` —
-that act as thin wrappers over `automojo-provisioning`'s `ProvisioningEngine`.
+that act as thin wrappers over `codecraftai-provisioning`'s `ProvisioningEngine`.
 Per §1.14 of `IMPLEMENTATION-PLAN.md` and §2.9 of
 `PLAN-VPN-AND-CLOUD-PROVISIONING.md`, the CLI surface contains **no business
 logic**: each subcommand parses one positional argument (a spec YAML path), a
@@ -12,13 +12,13 @@ small set of common options, hands a parsed spec to the engine, and renders the
 returned object.
 
 The subcommands follow the existing arcli decorator/grouping pattern documented
-in `automojo-arcli/specs/cli/design.md` (root → `provision` group → leaf
+in `codecraftai-arcli/specs/cli/design.md` (root → `provision` group → leaf
 commands).
 
 See Also:
-- `automojo-arcli/specs/cli/design.md`
-- `automojo-provisioning/specs/cloud-provisioner-lifecycle/requirements.md`
-- `automojo-provisioning/specs/provisioning-engine-pipeline/requirements.md`
+- `codecraftai-arcli/specs/cli/design.md`
+- `codecraftai-provisioning/specs/cloud-provisioner-lifecycle/requirements.md`
+- `codecraftai-provisioning/specs/provisioning-engine-pipeline/requirements.md`
 
 ---
 
@@ -128,7 +128,7 @@ print the currently-known inventory for the resources in the spec.
 
 **User Story:** As a maintainer, I want to be sure that the CLI layer never
 makes provisioning decisions itself so that all behaviour stays in
-`automojo-provisioning`.
+`codecraftai-provisioning`.
 
 #### Acceptance Criteria
 

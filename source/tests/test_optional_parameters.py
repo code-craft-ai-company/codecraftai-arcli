@@ -10,15 +10,15 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
-import automojo
+import ccai
 from source.tests import setup_mocks
 
-from automojo.arcli.model.parameters.optionalintegerparameter import OptionalIntegerParameter
-from automojo.arcli.model.parameters.optionalstringparameter import OptionalStringParameter
-from automojo.arcli.model.parameters.integerparameter import IntegerParameter
-from automojo.arcli.model.parameters.stringparameter import StringParameter
-from automojo.arcli.decorators import entry, option, command
-from automojo.arcli import CliRunner
+from ccai.arcli.model.parameters.optionalintegerparameter import OptionalIntegerParameter
+from ccai.arcli.model.parameters.optionalstringparameter import OptionalStringParameter
+from ccai.arcli.model.parameters.integerparameter import IntegerParameter
+from ccai.arcli.model.parameters.stringparameter import StringParameter
+from ccai.arcli.decorators import entry, option, command
+from ccai.arcli import CliRunner
 
 class TestOptionalParameters(unittest.TestCase):
 

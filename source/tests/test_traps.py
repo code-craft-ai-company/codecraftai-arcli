@@ -11,7 +11,7 @@ sys.path.insert(0, str(repo_root))
 
 from source.tests import setup_mocks
 
-from automojo.arcli import decorators
+from ccai.arcli import decorators
 
 class TestTraps(unittest.TestCase):
 

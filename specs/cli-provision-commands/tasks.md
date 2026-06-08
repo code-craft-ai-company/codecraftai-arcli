@@ -1,6 +1,6 @@
 # Implementation Plan — cli-provision-commands
 
-- [x] 1. Create the `automojo/arcli/commands/provision/` package skeleton with an
+- [x] 1. Create the `ccai/arcli/commands/provision/` package skeleton with an
       `__init__.py` that registers the leaf modules on import.
 - [x] 2. Implement `provisiongroup.py` exposing a `GroupingCommand` named
       `"provision"` and attach it to the arcli root `EntryCommand`.
@@ -29,5 +29,5 @@
 - [x] 13. Add a `hypothesis` property test `test_format_option_round_trip`
        covering Requirement 8 acceptance criterion 2.
 - [x] 14. Cross-link this spec from
-       `automojo-provisioning/specs/provisioning-engine-pipeline/design.md`
+       `codecraftai-provisioning/specs/provisioning-engine-pipeline/design.md`
        under its See Also section.
