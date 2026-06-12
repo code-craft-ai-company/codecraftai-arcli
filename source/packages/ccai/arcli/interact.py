@@ -68,6 +68,7 @@ class Spinner:
         self.busy = False
         self.spinner_visible = False
         self.message = message
+        self._thread = None
 
     def write_next(self):
         sys.stdout.write(next(self.spinner))
@@ -99,7 +100,7 @@ class Spinner:
     def __exit__(self, exception, value, tb):
         if self.busy:
             self.busy = False
-            if hasattr(self, '_thread'):
+            if self._thread is not None:
                 self._thread.join()
 
         if exception is not None:

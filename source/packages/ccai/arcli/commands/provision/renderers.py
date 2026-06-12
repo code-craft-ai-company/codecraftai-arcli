@@ -50,7 +50,7 @@ def render_plan(*, plan: Any, fmt: str) -> str:
         Render a MultiVenueProvisioningPlan for stdout.
 
         :param plan: The plan object.
-        :param fmt: One of "text" or "json".
+        :param fmt: One of "text", "json", or "yaml".
 
         :returns: The rendered text.
         :raises: ValueError
@@ -63,6 +63,11 @@ def render_plan(*, plan: Any, fmt: str) -> str:
 
     if fmt == _JSON_FORMAT:
         rtnval = json.dumps(plan_dict, indent=2, sort_keys=True, default=str)
+        return rtnval
+
+    if fmt == _YAML_FORMAT:
+        import yaml
+        rtnval = yaml.safe_dump(plan_dict, default_flow_style=False, sort_keys=True)
         return rtnval
 
     lines = ["ProvisioningPlan:"]
@@ -88,7 +93,7 @@ def render_result(*, result: Any, fmt: str) -> str:
         Render an apply result for stdout.
 
         :param result: A per-venue results map.
-        :param fmt: One of "text" or "json".
+        :param fmt: One of "text", "json", or "yaml".
 
         :returns: The rendered text.
         :raises: ValueError
@@ -112,6 +117,11 @@ def render_result(*, result: Any, fmt: str) -> str:
 
     if fmt == _JSON_FORMAT:
         rtnval = json.dumps(serialised, indent=2, sort_keys=True, default=str)
+        return rtnval
+
+    if fmt == _YAML_FORMAT:
+        import yaml
+        rtnval = yaml.safe_dump(serialised, default_flow_style=False, sort_keys=True)
         return rtnval
 
     lines = ["ProvisioningResult:"]

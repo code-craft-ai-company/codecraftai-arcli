@@ -1,4 +1,4 @@
-# AutoMojo ARCLI Framework Requirements
+# Code Craft AI ARCLI Framework Requirements
 
 ## Functional Requirements
 
@@ -205,4 +205,4 @@ class ParameterBase(Generic[PT]):
 - Trap callbacks receive no parameters and can perform any action
 - Application exits cleanly after trap execution
 
-This requirements specification ensures the AutoMojo ARCLI framework provides a robust, type-safe, and extensible foundation for building sophisticated command-line applications while maintaining the debuggability and readability standards essential for testing tools and frameworks.
+This requirements specification ensures the Code Craft AI ARCLI framework provides a robust, type-safe, and extensible foundation for building sophisticated command-line applications while maintaining the debuggability and readability standards essential for testing tools and frameworks.

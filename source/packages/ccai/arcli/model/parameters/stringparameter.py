@@ -31,7 +31,7 @@ class StringParameter(ParameterBase[str]):
                 # Convert non-string values to string
                 cval = str(cval)
         else:
-            # Return empty string instead of None for consistency with type annotation
+            # No value present; return None (matches the Union[str, None] return annotation)
             cval = None
 
         return cval

@@ -85,12 +85,16 @@ class EntryCommand(GroupingCommand):
 
     def _command_entry(self, prog_name: str, args: Sequence[str]) -> int:
         """
-            Add an option group to this command.
-            
-            This method processes all OptionField objects in the option group class
-            and registers them with this command.
-            
-            :param option_group: The option group class containing OptionField objects
+            Entry point that runs this command from a program name and argument list.
+
+            Builds the full ``argv`` (program name + args), constructs the option
+            parser, prepares the call arguments from the parsed input, and invokes
+            the command body.
+
+            :param prog_name: The program name to use as ``argv[0]``.
+            :param args: The command-line arguments to parse and dispatch.
+
+            :returns: The integer exit code for the command (``0`` on success).
         """
         # Create a full argv list with program name + args for the parser
         full_argv = [prog_name] + list(args)

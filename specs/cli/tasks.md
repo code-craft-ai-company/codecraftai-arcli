@@ -1,4 +1,4 @@
-# AutoMojo ARCLI Framework Implementation Tasks
+# Code Craft AI ARCLI Framework Implementation Tasks
 
 ## Epic 1: Core Command Node System
 
@@ -412,4 +412,4 @@
 2. Task 8.3: Continuous Integration
 3. Task 7.3: Performance and Memory Testing
 
-This task breakdown provides a clear roadmap for completing the AutoMojo ARCLI framework implementation while maintaining focus on the key differentiating features: option groups with template-based help strings and the three-tier command hierarchy system.
+This task breakdown provides a clear roadmap for completing the Code Craft AI ARCLI framework implementation while maintaining focus on the key differentiating features: option groups with template-based help strings and the three-tier command hierarchy system.
