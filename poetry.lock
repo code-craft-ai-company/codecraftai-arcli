@@ -12,7 +12,7 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-errors.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-errors.git"
 reference = "main"
 resolved_reference = "bbc01a9b9e7602c225ffab0716bc6e56b472e4b4"
 
@@ -240,4 +240,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "6cbbdf8ba850e0166bb2659e9898cdfcb5ab398cf9995883d0b5da094b27295c"
+content-hash = "f0e6d10ef5ef7e6ae989710d2371722d5a9df1436b1093dca7c4b2fd49b0b01c"
