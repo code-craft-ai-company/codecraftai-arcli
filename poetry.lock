@@ -2,19 +2,20 @@
 
 [[package]]
 name = "codecraftai-errors"
-version = "0.0.2"
+version = "1.0.0"
 description = "Code Craft AI - Errors"
 optional = false
 python-versions = ">=3.10,<4.0"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "codecraftai_errors-1.0.0-py3-none-any.whl", hash = "sha256:6fa27c28e7e9eae33fde10d6ebc0c1e9f600bfafd124b3f199de6db5f587d18c"},
+    {file = "codecraftai_errors-1.0.0.tar.gz", hash = "sha256:45c6a526741e0920b356e796fd3379656d4b5dd018c58c02676783f4dcc4096d"},
+]
 
 [package.source]
-type = "git"
-url = "https://github.com/code-craft-ai-company/codecraftai-errors.git"
-reference = "main"
-resolved_reference = "bbc01a9b9e7602c225ffab0716bc6e56b472e4b4"
+type = "legacy"
+url = "https://code-craft.ai/licensed-repository/simple"
+reference = "codecraftai"
 
 [[package]]
 name = "exceptiongroup"
@@ -240,4 +241,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "f0e6d10ef5ef7e6ae989710d2371722d5a9df1436b1093dca7c4b2fd49b0b01c"
+content-hash = "f23e84ae2f8ac3a939d19f6de54d417cbe0af3aca6bff07fe66669e6aec37feb"
