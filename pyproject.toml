@@ -27,7 +27,7 @@ hypothesis = "^6.0.0"
 [[tool.poetry.source]]
 name = "codecraftai"
 url = "https://code-craft.ai/licensed-repository/simple/"
-priority = "explicit"
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]
