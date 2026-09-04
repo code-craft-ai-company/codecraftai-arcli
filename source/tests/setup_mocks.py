@@ -1,6 +1,27 @@
+import importlib.util
 import sys
 import types
 from pathlib import Path
+
+
+def _importable(dotted_name: str) -> bool:
+    """
+        True when ``dotted_name`` can be imported from the current sys.path.
+
+        ``importlib.util.find_spec`` imports the PARENT packages of a dotted
+        name, so probing 'ccai.provisioning.aspects.x' raises
+        ModuleNotFoundError when 'ccai.provisioning' itself is absent -- the
+        very case the probe is meant to detect.  Walk the name one segment
+        at a time instead.
+    """
+    parts = dotted_name.split(".")
+    for depth in range(1, len(parts) + 1):
+        try:
+            if importlib.util.find_spec(".".join(parts[:depth])) is None:
+                return False
+        except ModuleNotFoundError:
+            return False
+    return True
 
 # Ensure package paths
 repo_root = Path(__file__).resolve().parents[2]
@@ -10,11 +31,22 @@ sys.path.insert(0, str(repo_root))
 import ccai
 
 # Mocking ccai.errors dependencies
-if not hasattr(ccai, 'errors'):
+#
+# Stub ONLY when the real package cannot be imported.  ``hasattr(ccai,
+# 'errors')`` is the wrong probe: before anything imports the subpackage the
+# attribute is absent even when codecraftai-foundations is installed, and the
+# stub then shadows the real package for every later import in the process --
+# ccai.testbase, for one, needs ccai.errors.xtraceback and fails with
+# "'ccai.errors' is not a package".
+if not _importable("ccai.errors.exceptions"):
     err_mod = types.ModuleType('ccai.errors.exceptions')
-    class SemanticError(Exception): pass
-    class MissingOptionError(Exception): pass
-    class AbstractMethodError(Exception): pass
+    # Mirror the real contract: ccai.errors.exceptions.SemanticError derives
+    # from BaseException ON PURPOSE so misuse halts a run even under a broad
+    # 'except Exception'.  A stub that derives from Exception changes what the
+    # tests observe (CliRunner would swallow it), so keep the stub faithful.
+    class SemanticError(BaseException): pass
+    class MissingOptionError(SemanticError): pass
+    class AbstractMethodError(SemanticError): pass
     err_mod.SemanticError = SemanticError
     err_mod.MissingOptionError = MissingOptionError
     err_mod.AbstractMethodError = AbstractMethodError
@@ -37,7 +69,7 @@ if not hasattr(ccai, 'errors'):
 # stub minimal is deliberate: a broad fake would drift from the real package
 # without anything noticing, and the engine itself is injected through
 # enginefactory's override rather than constructed here.
-if not hasattr(ccai, 'provisioning'):
+if not _importable("ccai.provisioning.aspects.provisioningaspects"):
     class ProvisioningAspects:
         """Stand-in carrying only the flags arcli sets."""
 

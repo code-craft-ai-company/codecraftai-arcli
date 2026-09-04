@@ -35,9 +35,10 @@ class ListOfStringParameter(ParameterBase[List[str]]):
         for titem in items_to_process:
             if isinstance(titem, str):
                 citem = titem
-                if citem.startswith('"') and citem.endswith('"'):
-                    citem = citem[1:-1]
-                elif citem.startswith("'") and citem.endswith("'"):
+                # Only a value WRAPPED in matching quotes is unwrapped.  A
+                # lone quote character satisfies startswith AND endswith on
+                # its own, and [1:-1] would silently turn it into ''.
+                if len(citem) >= 2 and citem[0] == citem[-1] and citem[0] in ('"', "'"):
                     citem = citem[1:-1]
             else:
                 citem = str(titem)

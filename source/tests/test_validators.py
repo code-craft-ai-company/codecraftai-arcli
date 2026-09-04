@@ -117,12 +117,13 @@ class TestValidators(unittest.TestCase):
             return
 
         runner = CliRunner()
-        result = runner.invoke(main, args=["--color=orange"])
-
-        self.assertEqual(result.exit_code, 1)
-        self.assertIsInstance(result.exception, SemanticError)
-        self.assertIn("parameter 'color'", str(result.exception))
-        self.assertIn("Invalid value 'orange'", str(result.exception))
+        # SemanticError derives from BaseException on purpose: misuse must
+        # halt the run, so CliRunner (which catches Exception only) does not
+        # swallow it into a Result.  Assert the halt directly.
+        with self.assertRaises(SemanticError) as caught:
+            runner.invoke(main, args=["--color=orange"])
+        self.assertIn("parameter 'color'", str(caught.exception))
+        self.assertIn("Invalid value 'orange'", str(caught.exception))
 
     def test_optional_multiple_choice_without_value_does_not_raise(self):
         BreakpointType = Choice(["test-discovery", "testrun-start"])
@@ -190,10 +191,12 @@ class TestValidators(unittest.TestCase):
         self.assertIsNone(result_ok.exception)
         self.assertEqual(result_ok.stdout.strip(), "[1, 10]")
 
-        result_bad = runner.invoke(main, args=["--count=11"])
-        self.assertEqual(result_bad.exit_code, 1)
-        self.assertIsInstance(result_bad.exception, SemanticError)
-        self.assertIn("parameter 'counts'", str(result_bad.exception))
+        # SemanticError derives from BaseException on purpose: misuse must
+        # halt the run, so CliRunner (which catches Exception only) does not
+        # swallow it into a Result.  Assert the halt directly.
+        with self.assertRaises(SemanticError) as caught:
+            runner.invoke(main, args=["--count=11"])
+        self.assertIn("parameter 'counts'", str(caught.exception))
 
     def test_multiple_path_validates_each_value(self):
         PathType = PathParam(exists=True, file_okay=True, dir_okay=False)
@@ -240,10 +243,12 @@ class TestValidators(unittest.TestCase):
         self.assertIsNone(result_ok.exception)
         self.assertEqual(result_ok.stdout.strip(), "['x', 'xx']")
 
-        result_bad = runner.invoke(main, args=["--token=y"])
-        self.assertEqual(result_bad.exit_code, 1)
-        self.assertIsInstance(result_bad.exception, SemanticError)
-        self.assertIn("parameter 'tokens'", str(result_bad.exception))
+        # SemanticError derives from BaseException on purpose: misuse must
+        # halt the run, so CliRunner (which catches Exception only) does not
+        # swallow it into a Result.  Assert the halt directly.
+        with self.assertRaises(SemanticError) as caught:
+            runner.invoke(main, args=["--token=y"])
+        self.assertIn("parameter 'tokens'", str(caught.exception))
 
     def test_multiple_custom_converts_each_value(self):
         CustomType = Custom(lambda val: val.upper())
