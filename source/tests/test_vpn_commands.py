@@ -1,5 +1,6 @@
 
 import sys
+import platform
 import unittest
 from dataclasses import dataclass
 from pathlib import Path
@@ -149,8 +150,10 @@ class TestVpnCommands(unittest.TestCase):
         with open(out_path, "r") as fhandle:
             written = fhandle.read()
         self.assertIn("tskey-auth-xxxx", written)
-        file_mode = stat.S_IMODE(os.stat(out_path).st_mode)
-        self.assertEqual(file_mode, stat.S_IRUSR | stat.S_IWUSR)
+        if platform.system() != "Windows":
+            # POSIX permission bits; Windows has no equivalent mode to assert on.
+            file_mode = stat.S_IMODE(os.stat(out_path).st_mode)
+            self.assertEqual(file_mode, stat.S_IRUSR | stat.S_IWUSR)
         return
 
     def test_mint_authkey_unknown_provider_rejected(self) -> None:

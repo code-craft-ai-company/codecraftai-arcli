@@ -219,7 +219,8 @@ class TestValidators(unittest.TestCase):
         result = runner.invoke(main, args=[f"--path={current_file}"])
         self.assertEqual(result.exit_code, 0)
         self.assertIsNone(result.exception)
-        self.assertEqual(result.stdout.strip(), f"['{current_file}']")
+        # The command prints the list's repr, which escapes backslashes on Windows.
+        self.assertEqual(result.stdout.strip(), str([current_file]))
 
     def test_multiple_regex_validates_each_value(self):
         RegexType = Regex(r"^x+$")
