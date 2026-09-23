@@ -1,7 +1,6 @@
 
 import sys
 import unittest
-import types
 from pathlib import Path
 from typing import Optional
 
@@ -10,14 +9,14 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
-import ccai
 from source.tests import setup_mocks
+setup_mocks.install_mocks()
 
 from ccai.arcli.model.parameters.optionalintegerparameter import OptionalIntegerParameter
 from ccai.arcli.model.parameters.optionalstringparameter import OptionalStringParameter
 from ccai.arcli.model.parameters.integerparameter import IntegerParameter
 from ccai.arcli.model.parameters.stringparameter import StringParameter
-from ccai.arcli.decorators import entry, option, command
+from ccai.arcli.decorators import entry, option
 from ccai.arcli import CliRunner
 
 class TestOptionalParameters(unittest.TestCase):

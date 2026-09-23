@@ -1,9 +1,7 @@
 
 import sys
 import unittest
-import os
 from pathlib import Path
-import types
 
 # Ensure package paths
 # __file__ is source/tests/test_validators.py
@@ -15,12 +13,12 @@ sys.path.insert(0, str(repo_root / 'source/packages'))
 
 sys.path.insert(0, str(repo_root))
 
-import ccai
 from source.tests import setup_mocks
+setup_mocks.install_mocks()
+
 from ccai.errors.exceptions import SemanticError
 
 from ccai.arcli.model.parameters.validators import Choice, Range, Path as PathParam, Regex, Custom
-from ccai.arcli.model.parameters.parameterbase import ParameterBase
 from ccai.arcli.model.parameters.integerparameter import IntegerParameter
 from ccai.arcli.model.fields.optionfield import OptionMode
 from ccai.arcli import CliRunner, decorators

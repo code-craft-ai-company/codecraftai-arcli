@@ -1,6 +1,6 @@
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import sys
 from io import StringIO
 from pathlib import Path
@@ -11,13 +11,10 @@ sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
 from source.tests import setup_mocks
+setup_mocks.install_mocks()
 
 from ccai.arcli.interact import InteractionStrategy, prompt_for_input, confirm, Spinner
-from ccai.arcli.model.clicontext import CliContext
-from ccai.arcli.model.entrycommand import EntryCommand
-from ccai.arcli.model.command import Command
 from ccai.arcli.decorators import entry, option, argument
-from ccai.arcli.parsing import ProgressiveOptionParser
 from ccai.arcli.errors import MissingOptionError
 from ccai.arcli.model.fields.optionfield import OptionMode
 
@@ -85,8 +82,9 @@ class TestInteractionIntegration(unittest.TestCase):
         sys.stdout = captured_output
 
         try:
-            my_cmd(args=[])
+            my_cmd(args=args)
         except SystemExit:
+            # Expected: the CLI entry point may end with sys.exit(); the prompt and output are verified below.
             pass
         finally:
             sys.stdout = sys.__stdout__
@@ -104,6 +102,7 @@ class TestInteractionIntegration(unittest.TestCase):
             my_cmd(args=[])
             self.fail("MissingOptionError not raised")
         except MissingOptionError:
+            # Expected: with InteractionStrategy.NEVER a missing required option must raise instead of prompting.
             pass
         except Exception as e:
             self.fail(f"Raised wrong exception: {e}")
@@ -142,6 +141,7 @@ class TestInteractionIntegration(unittest.TestCase):
         try:
             my_cmd(args=[])
         except SystemExit:
+            # Expected: the CLI entry point may end with sys.exit(); the prompt and output are verified below.
             pass
         finally:
             sys.stdout = sys.__stdout__
@@ -162,6 +162,7 @@ class TestInteractionIntegration(unittest.TestCase):
         try:
             my_cmd(args=[])
         except SystemExit:
+            # Expected: the CLI entry point may end with sys.exit(); the prompt and output are verified below.
             pass
         finally:
             sys.stdout = sys.__stdout__

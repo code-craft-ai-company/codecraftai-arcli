@@ -10,10 +10,10 @@ sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
 from source.tests import setup_mocks
+setup_mocks.install_mocks()
 from ccai.errors.exceptions import SemanticError
 
 from ccai.arcli import decorators
-from ccai.arcli.model.groupingcommand import GroupingCommand
 
 class TestGrouping(unittest.TestCase):
 
@@ -41,6 +41,7 @@ class TestGrouping(unittest.TestCase):
             try:
                 main()
             except SystemExit:
+                # Expected: the CLI entry point ends with sys.exit(); the captured output is verified below.
                 pass
 
         output = buf.getvalue().strip()

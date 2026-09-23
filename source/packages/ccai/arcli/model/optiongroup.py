@@ -7,8 +7,6 @@ from typing import Dict, Optional, TYPE_CHECKING
 
 from ccai.errors.exceptions import SemanticError
 
-from ccai.arcli.model.fields.optionfield import OptionField
-
 if TYPE_CHECKING:
     from ccai.arcli.model.command import Command
 

@@ -12,15 +12,14 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
-from source.tests import setup_mocks  # noqa: F401
+from source.tests import setup_mocks
+setup_mocks.install_mocks()
 
 import yaml
 from hypothesis import given, strategies as st, settings, HealthCheck
 
 from ccai.arcli import CliRunner, decorators
-from ccai.arcli.commands.provision import (
-    plan_command, register_provision_commands,
-)
+from ccai.arcli.commands.provision import register_provision_commands
 from ccai.arcli.commands.provision import enginefactory
 
 

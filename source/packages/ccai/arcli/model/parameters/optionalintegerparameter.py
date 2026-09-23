@@ -3,7 +3,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
-from typing import Union, Optional
+from typing import Optional
 
 from ccai.arcli.model.parameters.integerparameter import IntegerParameter
 

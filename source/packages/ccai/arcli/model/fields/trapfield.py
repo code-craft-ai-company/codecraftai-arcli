@@ -3,9 +3,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
-from typing import Any, Callable, Dict, Optional, TYPE_CHECKING
-
-from ccai.errors.exceptions import SemanticError
+from typing import Callable, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ccai.arcli.model.optiongroup import OptionGroup

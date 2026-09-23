@@ -8,6 +8,7 @@ from typing import Callable, Dict, List, Optional, Type, Union
 
 import collections
 import inspect
+import sys
 
 from ccai.errors.exceptions import SemanticError
 
@@ -379,4 +380,4 @@ class Command:
         from ccai.arcli.helpgenerator import HelpGenerator
         help_text = HelpGenerator.generate_help(self)
         print(help_text)
-        exit(0)
+        sys.exit(0)

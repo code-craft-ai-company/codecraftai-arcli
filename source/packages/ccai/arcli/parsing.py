@@ -7,12 +7,11 @@ __credits__ = []
 from typing import Dict, OrderedDict, Generator, List, Tuple, Union, TYPE_CHECKING
 
 import collections
-import shlex
+import sys
 
 
 from ccai.errors.exceptions import SemanticError
 
-from ccai.arcli.model.parameters.parameterbase import ParameterBase
 from ccai.arcli.model.parameters.booleanparameter import BooleanParameter
 
 from ccai.arcli.model.fields.argfield import ArgField
@@ -74,7 +73,7 @@ class ProgressiveOptionParser:
 
             if isinstance(nxtopt_field, TrapField):
                 nxtopt_field.call_trap_callback()
-                exit(0) # We only allow one trap to be hit at any given time, then we exit
+                sys.exit(0) # We only allow one trap to be hit at any given time, then we exit
             elif nxtopt_value is not None:
                 nxtopt_field.fill_token(nxtopt_value)
             else:

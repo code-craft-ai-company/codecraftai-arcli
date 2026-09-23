@@ -4,7 +4,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
-from typing import Any, Optional, Type, TYPE_CHECKING
+from typing import Any, Optional, Type
 
 
 from ccai.errors.exceptions import SemanticError

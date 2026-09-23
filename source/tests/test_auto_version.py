@@ -1,5 +1,4 @@
 import sys
-import types
 from pathlib import Path
 import io
 import unittest
@@ -9,9 +8,9 @@ from contextlib import redirect_stdout
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
-import ccai
 
 from source.tests import setup_mocks
+setup_mocks.install_mocks()
 
 from ccai.arcli import decorators
 

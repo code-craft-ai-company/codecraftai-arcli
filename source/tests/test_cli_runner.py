@@ -1,7 +1,6 @@
 
 import sys
 import unittest
-import types
 from pathlib import Path
 
 # Ensure package paths
@@ -9,8 +8,8 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root)) # For examples
 
-import ccai
 from source.tests import setup_mocks
+setup_mocks.install_mocks()
 
 from ccai.arcli import CliRunner
 import importlib

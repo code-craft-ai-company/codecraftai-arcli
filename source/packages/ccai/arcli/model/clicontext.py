@@ -4,8 +4,6 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
-import sys
-
 from ccai.arcli.interact import InteractionStrategy
 
 class CliContext:

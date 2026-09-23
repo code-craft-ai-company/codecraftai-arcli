@@ -10,6 +10,7 @@ sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
 from source.tests import setup_mocks
+setup_mocks.install_mocks()
 
 from ccai.arcli import decorators
 
@@ -22,7 +23,6 @@ class TestTraps(unittest.TestCase):
         def my_trap():
             nonlocal trap_triggered
             trap_triggered = True
-            pass
 
         @decorators.trap("--my-trap", trap_callback=my_trap)
         @decorators.entry()
@@ -35,6 +35,7 @@ class TestTraps(unittest.TestCase):
             try:
                 main()
             except SystemExit:
+                # Expected: the CLI entry point ends with sys.exit(); the captured output is verified below.
                 pass
 
         output = buf.getvalue().strip()
@@ -67,6 +68,7 @@ class TestTraps(unittest.TestCase):
         try:
             main()
         except SystemExit:
+            # Expected: a trap exits the CLI after its callback runs; the trap flags are verified below.
             pass
         self.assertTrue(trap_a_triggered)
         self.assertFalse(trap_b_triggered)

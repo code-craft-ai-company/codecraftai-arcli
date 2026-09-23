@@ -2,7 +2,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
-from typing import Any, Optional
+from typing import Optional
 
 import sys
 import threading
@@ -105,3 +105,5 @@ class Spinner:
 
         if exception is not None:
             return False
+
+        return None

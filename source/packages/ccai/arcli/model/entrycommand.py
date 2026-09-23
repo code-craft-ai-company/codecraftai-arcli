@@ -9,9 +9,6 @@ from typing import Callable, Sequence, Optional
 
 
 import sys
-import inspect
-
-from ccai.errors.exceptions import SemanticError
 
 from ccai.arcli.model.clicontext import CliContext
 from ccai.arcli.model.groupingcommand import GroupingCommand
@@ -72,7 +69,7 @@ class EntryCommand(GroupingCommand):
 
     def _version_callback(self):
         print(self._version)
-        exit(0)
+        sys.exit(0)
 
     @property
     def program_name(self) -> str:

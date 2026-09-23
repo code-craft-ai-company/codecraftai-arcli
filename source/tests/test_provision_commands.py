@@ -4,7 +4,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 from unittest.mock import MagicMock
 
 # Ensure package paths
@@ -12,19 +12,13 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
-from source.tests import setup_mocks  # noqa: F401
+from source.tests import setup_mocks
+setup_mocks.install_mocks()
 
 import yaml
 
 from ccai.arcli import CliRunner, decorators
-from ccai.arcli.commands.provision import (
-    apply_command,
-    destroy_command,
-    inventory_command,
-    plan_command,
-    provision_group,
-    register_provision_commands,
-)
+from ccai.arcli.commands.provision import register_provision_commands
 from ccai.arcli.commands.provision import enginefactory
 
 

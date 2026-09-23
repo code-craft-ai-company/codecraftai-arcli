@@ -6,8 +6,6 @@ __credits__ = []
 
 from typing import Callable
 
-import inspect
-
 from ccai.errors.exceptions import SemanticError
 from ccai.arcli.model.command import Command
 

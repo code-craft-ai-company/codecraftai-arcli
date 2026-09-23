@@ -5,7 +5,7 @@ __credits__ = []
 
 import io
 import sys
-from typing import Any, Callable, List, Optional, Tuple, Union, Sequence
+from typing import Any, Callable, Optional, Tuple, Union, Sequence
 from dataclasses import dataclass
 from contextlib import redirect_stdout, redirect_stderr
 

@@ -11,14 +11,13 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / 'source/packages'))
 sys.path.insert(0, str(repo_root))
 
-from source.tests import setup_mocks  # noqa: F401
+from source.tests import setup_mocks
+setup_mocks.install_mocks()
 
 from hypothesis import given, strategies as st, settings, HealthCheck
 
 from ccai.arcli import CliRunner, decorators
-from ccai.arcli.commands.vpn import (
-    mint_authkey_command, register_vpn_commands,
-)
+from ccai.arcli.commands.vpn import register_vpn_commands
 from ccai.arcli.commands.vpn import providerresolver
 
 
